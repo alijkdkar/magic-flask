@@ -6,6 +6,11 @@ print("in it")
 from . import create_app # from __init__ file
 app = create_app(os.getenv("CONFIG_MODE"))
 
+
+# Applications Routes
+from .accounts import urls
+
+
 # Hello World!
 @app.route('/')
 def hello():

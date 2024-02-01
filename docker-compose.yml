@@ -1,17 +1,17 @@
 version: '3.8'
 
 services:
-  web:
-    image: magic:latest
-    command: python manage.py runserver 0.0.0.0:8000
-    # volumes:
-    #   - ./magicApi/:/usr/src/app/
-    ports:
-      - 8000:8000
-    env_file:
-      - magicApi/magicApi/.env
-    networks:
-      - magicNetwork
+  # web:
+  #   image: magic:latest
+  #   command: python manage.py runserver 0.0.0.0:8000
+  #   # volumes:
+  #   #   - ./magicApi/:/usr/src/app/
+  #   ports:
+  #     - 8000:8000
+  #   env_file:
+  #     - magicApi/magicApi/.env
+  #   networks:
+  #     - magicNetwork
 
 
   postgres:
@@ -19,7 +19,7 @@ services:
     container_name: magicdb
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: Abc1234@$
+      POSTGRES_PASSWORD: Abc1234
       POSTGRES_DB: magicDb
     volumes:
       - pgdata:/var/lib/postgresql/data
