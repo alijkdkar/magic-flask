@@ -1,1 +1,3 @@
 myVenv/
+*.meta
+*.pyc

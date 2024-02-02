@@ -18,7 +18,6 @@ def list_all_accounts_controller():
 
 def create_account_controller():
     request_form = request.form.to_dict()
-
     id = str(uuid.uuid4())
     new_account = Account(
                           id             = id,
