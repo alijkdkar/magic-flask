@@ -1,6 +1,7 @@
 from minio import Minio,S3Error
 from io import BytesIO
 import os
+from datetime import timedelta
 class MinIoProvider():
 
         client = None
@@ -42,3 +43,9 @@ class MinIoProvider():
 
                 # Use put_object to upload the file to MinIO without writing it to a physical location
                 self.client.put_object(bucket_name, file.filename, file_data, len(file_data.getvalue()), content_type)
+
+        def GetFileUrl(self,fileName):
+                url = self.client.get_presigned_url(bucket_name="tenant",object_name=fileName,method="GET",expires=timedelta(hours=2))
+                return url
+
+        

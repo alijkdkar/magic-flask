@@ -35,7 +35,7 @@ class Production(db.Model):
 
 
 class ProductionImage(db.Model):
-        id = db.Column(db.String(50), primary_key=True, nullable=False, unique=True)
+        id = db.Column(db.String(50), primary_key=True, nullable=False, unique=True) 
         file_id = db.Column(db.String(50))#minio file Id
         image_path = db.Column(db.String(255), nullable=False)
         product_id = db.Column(db.String(50), db.ForeignKey('production.id'), nullable=False)
