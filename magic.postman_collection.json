@@ -1,0 +1,289 @@
+{
+	"info": {
+		"_postman_id": "66660c00-5b50-40e2-9368-4a6b3d564432",
+		"name": "magic",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8891920"
+	},
+	"item": [
+		{
+			"name": "Account",
+			"item": [
+				{
+					"name": "get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/accounts",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Account",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"behzad.bluekian@gmail.com\",\n    \"username\":\"alijkdkar\",\n    \"country\":98,\n    \"phone_number\":\"9132120832\"\n}"
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/accounts",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"accounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/accounts/3d1301a4-a98f-42af-95f7-1f6c0a65d169",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"accounts",
+								"3d1301a4-a98f-42af-95f7-1f6c0a65d169"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/accounts/cf7454ce-d9bf-446b-a501-be59cb166c88",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"accounts",
+								"cf7454ce-d9bf-446b-a501-be59cb166c88"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "behzad.bluekian@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "alijkdkarr",
+									"type": "text"
+								},
+								{
+									"key": "country",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "phone_number",
+									"value": "9132120832",
+									"type": "text"
+								},
+								{
+									"key": "dob",
+									"value": "1991/11/20",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/accounts/cf7454ce-d9bf-446b-a501-be59cb166c88",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"accounts",
+								"cf7454ce-d9bf-446b-a501-be59cb166c88"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "production",
+			"item": [
+				{
+					"name": "get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/productions",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"productions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/productions/4ae58ccb-ea7a-4bb5-87b8-a87a5aa7d928",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"productions",
+								"4ae58ccb-ea7a-4bb5-87b8-a87a5aa7d928"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "test",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "desc",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "100000",
+									"type": "text"
+								},
+								{
+									"key": "unit",
+									"value": "Tona",
+									"type": "text"
+								},
+								{
+									"key": "material",
+									"value": "material",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "code1",
+									"type": "text"
+								},
+								{
+									"key": "color",
+									"value": "NONE",
+									"type": "text"
+								},
+								{
+									"key": "stock",
+									"value": "AVAILABLE",
+									"type": "text"
+								},
+								{
+									"key": "image",
+									"value": "36e2ea9e-13b2-4152-be6e-016bda815eae",
+									"type": "text"
+								},
+								{
+									"key": "images",
+									"value": "706c0364-6a82-4011-bea7-289f05b515db.jpeg,706c0364-6a82-4011-bea7-289f05b515db.jpeg",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/productions",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"productions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
