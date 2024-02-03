@@ -3,6 +3,7 @@ import uuid,os
 from werkzeug.utils import secure_filename
 from .. import minio
 from .. import db
+from ..utils.ImageProccessor import CoreImageAnalyzer
 from .models import Production,ProductionImage
 from sqlalchemy import inspect
 
@@ -84,7 +85,35 @@ def upload_file():
             filename,extention = os.path.splitext(file.filename)
             file.filename=str(uuid.uuid4())+extention
             minio.Upload_File(file=file)
+            feature = CoreImageAnalyzer().FeattureExtraction(file=file)
+            print(feature)
             return jsonify({"id":file.filename})
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
+
+
+def search_by_file():
+    if request.method == 'POST':
+        # check if the post request has the file part
+        if 'file' not in request.files:
+            return jsonify({"No File Uploaded"})
+        file = request.files['file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            return jsonify({"Bad Request"})
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            # upload to minio and return id 
+            return list_all_production_controller()
+            
     return '''
     <!doctype html>
     <title>Upload new File</title>
