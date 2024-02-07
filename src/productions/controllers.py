@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 from .. import minio
 from .. import db
 from ..utils.ImageProccessor import CoreImageAnalyzer
-from .models import Production,ProductionImage
+from .models import Production,ProductionImage,Category,Tag
 from sqlalchemy import inspect
 
 allowed_extention = ['jpg','jpeg','png',]
@@ -129,3 +129,17 @@ def allowed_file(fileName:str):
      if fileName.split('.')[1] in allowed_extention:
         return True
      return False
+
+
+
+
+#region Category
+
+def create_category():
+    request_form = request.form.to_dict()
+    cat = Category(title=request_form['title'],description=request_form['description'],parent_id=request_form['parentId'])
+    db.session.add(cat)
+    db.session.commit()
+    return jsonify(cat.toDict())
+
+#Todo Crud

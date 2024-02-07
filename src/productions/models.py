@@ -4,13 +4,46 @@ from datetime import datetime
 from sqlalchemy.orm import validates
 
 from sqlalchemy import ForeignKey
-from sqlalchemy import Integer
+from sqlalchemy import Integer,func
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import relationship
 from typing import List
 from .. import db # from __init__.py
+
+
+
+class Category(db.Model):
+        id = db.Column(db.Integer, primary_key=True, nullable=False, unique=True)
+        title = db.Column(db.String(100))
+        description = db.Column(db.String(200))
+        parent_id = db.Column(Integer, ForeignKey('category.id'))
+
+        def toDict(self):
+                return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
+
+
+post_tag = db.Table('product_tag',
+                    db.Column('production_id', db.String(50), db.ForeignKey('production.id')),
+                    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
+                    )
+
+products_Category = db.Table('production_category',
+                    db.Column('production_id', db.String(50), db.ForeignKey('production.id')),
+                    db.Column('category_id', db.Integer, db.ForeignKey('category.id'))
+                    )
+
+
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+
+    def toDict(self):
+        return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
+
+    def __repr__(self):
+        return f'<Tag "{self.name}">' 
 
 
 class Production(db.Model):
@@ -24,8 +57,15 @@ class Production(db.Model):
         stock = db.Column(Enum('AVAILABLE', 'UNAVAILABLE', name='StockStatus'), nullable=True)
         code = db.Column(db.String(100))
         color = db.Column(Enum('NONE', 'BLUE','YELLOW','GRAY', name='Color'), nullable=True)
+        viewOnly = db.Column(db.Boolean())
+        enable = db.Column(db.Boolean())
+        createdTime =db.Column(db.DateTime(timezone=False), server_default=func.now())
+        updatedTime =db.Column(db.DateTime(timezone=False), onupdate=func.now())
+        
+        tags = db.relationship('Tag', secondary=post_tag, backref='products')
+        categorys = db.relationship("Category",secondary=products_Category, backref='product', lazy=True)
         images = db.relationship('ProductionImage', backref='product', lazy=True)
-
+        
         def toDict(self):
                 return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
 
