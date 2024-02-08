@@ -9,12 +9,15 @@ from sqlalchemy import inspect
 
 allowed_extention = ['jpg','jpeg','png',]
 
+# production
+
 def list_all_production_controller():
         allProduction =  Production.query.all()
         response = []
         for pro in allProduction:
                 data =pro.toDict()
                 data["image"]=minio.GetFileUrl(pro.image)
+                # data['categoris'] = pro
                 response.append(data)
         return  jsonify(response)
 
@@ -48,7 +51,7 @@ def create_product_controller():
                           stock  = request_form['stock'],
                           )
     imagesId = request_form['images'].split(',')
-    print(type(imagesId))
+    
     for x in imagesId:
         newImageId = str(uuid.uuid4())
         newProductImage= ProductionImage(
@@ -58,16 +61,47 @@ def create_product_controller():
               image_path= '',
               type = 'Image'
         )
-        print('image id',newProductImage.product_id)
         db.session.add(newProductImage)
 
     db.session.add(new_production)
     db.session.commit()
+    
+    categorisIds = request_form['categories'].split(',')
+    print(categorisIds)
+    for catId in categorisIds:
+        cat =Category.query.get(catId)
+        new_production.categorys.append(cat)
+    db.session.commit()
+
 
     response = Production.query.get(id).toDict()
     return jsonify(response)
 
-        
+
+def update_product_controller(product_id):
+    productDb = Production.query.get(product_id)
+    productDb.setValuesFromDict(request.form)
+    db.session.commit()
+    return jsonify({"Message":"Success"}),201
+
+def delete_product_controller(product_id):
+    product = Production.query.get(product_id)
+    if product is None:
+        jsonify({"error": "Not Found Production"}),404
+    
+    print(product.images)
+    for img in product.images:
+        # imgId = uuid.UUID(img.id)
+        # pimage =ProductionImage.query.filter_by(id=imgId).first()
+        db.session.delete(img)
+    
+    db.session.delete(product)
+    db.session.commit()
+    return  jsonify("Product Deleted")
+
+
+# production
+
 
 def upload_file():
     if request.method == 'POST':
@@ -134,12 +168,56 @@ def allowed_file(fileName:str):
 
 
 #region Category
-
 def create_category():
     request_form = request.form.to_dict()
-    cat = Category(title=request_form['title'],description=request_form['description'],parent_id=request_form['parentId'])
+    if 'parentId' in request_form:
+        cat = Category(title=request_form['title'],description=request_form['description'],parent_id=request_form['parentId'])
+    else:
+        cat = Category(title=request_form['title'],description=request_form['description'])
     db.session.add(cat)
     db.session.commit()
     return jsonify(cat.toDict())
 
+
+
+def  getAllCategories():
+    categories = Category.query.all()
+    result = []
+    for cat in categories:
+         result.append(cat.toDict())
+    return  jsonify(result)
+
+def GetCategoryById(id):
+     cat = Category.query.get(id)
+     if cat is None:
+        return jsonify({"error": "Not Found Exception"}),404
+     else :
+        return jsonify(cat.toDict())  
+
+
+def UpdateCategory(id):
+    cat = Category.query.get(id)
+    # if  cat.parent_id != None:
+    #       return jsonify({"error": "This category has subcategories and cannot be deleted"}),404
+    cat.setValuesFromDict(request.form)
+    try:
+        db.session.commit()
+    except Exception as ex:
+        print(ex)
+    return jsonify({"Message":"The category was updated successfully"}),201
+
+def DeleteCategory(id):
+    cat = Category.query.get(id)
+    print("parent",cat.parent_id)
+    
+    if Category.query.filter(Category.parent_id==id).count()>0:#todo: check ant production with this cat id #or Category.query.filter(Production.category_id == id).count() > 0:
+          return jsonify({"error": "This category has subcategories and cannot be deleted"}),403
+    else :
+          db.session.delete(cat)
+          db.session.commit()
+          return  jsonify("Category Deleted")
+
+
 #Todo Crud
+
+

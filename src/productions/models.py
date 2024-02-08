@@ -18,11 +18,15 @@ class Category(db.Model):
         id = db.Column(db.Integer, primary_key=True, nullable=False, unique=True)
         title = db.Column(db.String(100))
         description = db.Column(db.String(200))
-        parent_id = db.Column(Integer, ForeignKey('category.id'))
+        parent_id = db.Column(Integer, ForeignKey('category.id'),nullable=True, unique=False)
 
         def toDict(self):
                 return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
-
+        
+        def setValuesFromDict(self, data: dict) -> None:
+                for key, value in data.items():
+                        if hasattr(self, key):
+                                setattr(self, key, value)
 
 post_tag = db.Table('product_tag',
                     db.Column('production_id', db.String(50), db.ForeignKey('production.id')),
@@ -64,12 +68,15 @@ class Production(db.Model):
         
         tags = db.relationship('Tag', secondary=post_tag, backref='products')
         categorys = db.relationship("Category",secondary=products_Category, backref='product', lazy=True)
-        images = db.relationship('ProductionImage', backref='product', lazy=True)
+        images = db.relationship('ProductionImage', backref='product', lazy=True,cascade="all, delete-orphan")
         
         def toDict(self):
                 return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
 
-
+        def setValuesFromDict(self, data: dict) -> None:
+                for key, value in data.items():
+                        if hasattr(self, key):
+                                setattr(self, key, value)
         def __repr__(self):
                 return "<%r>" % self.name
 
