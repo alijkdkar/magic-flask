@@ -12,12 +12,24 @@ allowed_extention = ['jpg','jpeg','png',]
 # production
 
 def list_all_production_controller():
-        allProduction =  Production.query.all()
+        pageSize = request.args.get('pageSize')
+        pageNumber = request.args.get('pageNumber')
+        if pageSize is None:
+            pageSize=10
+        
+        if pageNumber is None:
+            pageNumber = 1
+
+        allProduction =  Production.query.paginate(max_per_page=int(pageSize),page=int(pageNumber))
         response = []
         for pro in allProduction:
                 data =pro.toDict()
                 data["image"]=minio.GetFileUrl(pro.image)
-                # data['categoris'] = pro
+
+                categoris=[]
+                for cat in pro.categorys:
+                    categoris.append(cat.toDict())
+                data['categories'] = categoris
                 response.append(data)
         return  jsonify(response)
 
@@ -32,6 +44,10 @@ def get_one_production_by_id_controller(prodId):
         data=product.toDict()
         data["imagesUrls"]=product.imagesUrl
         data['image']=minio.GetFileUrl(product.image)
+        categoris=[]
+        for cat in product.categorys:
+            categoris.append(cat.toDict())
+        data['categories'] = categoris
         return jsonify(data)
 
 def create_product_controller():

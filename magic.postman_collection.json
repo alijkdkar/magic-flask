@@ -167,7 +167,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:5000/productions",
+							"raw": "http://127.0.0.1:5000/admin/product?pageSize=200&pageNumber=1",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -177,7 +177,18 @@
 							],
 							"port": "5000",
 							"path": [
-								"productions"
+								"admin",
+								"product"
+							],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "200"
+								},
+								{
+									"key": "pageNumber",
+									"value": "1"
+								}
 							]
 						}
 					},
@@ -189,7 +200,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:5000/productions/4ae58ccb-ea7a-4bb5-87b8-a87a5aa7d928",
+							"raw": "http://127.0.0.1:5000/admin/product/0c621cb2-ea2e-4f73-84f0-4298c8815a94",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -199,8 +210,33 @@
 							],
 							"port": "5000",
 							"path": [
-								"productions",
-								"4ae58ccb-ea7a-4bb5-87b8-a87a5aa7d928"
+								"admin",
+								"product",
+								"0c621cb2-ea2e-4f73-84f0-4298c8815a94"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Production",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/admin/product/f1540ec8-7d78-4f8a-8be7-ce29eee8de7d",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"admin",
+								"product",
+								"f1540ec8-7d78-4f8a-8be7-ce29eee8de7d"
 							]
 						}
 					},
@@ -216,7 +252,7 @@
 							"formdata": [
 								{
 									"key": "name",
-									"value": "test",
+									"value": "test nnnn",
 									"type": "text"
 								},
 								{
@@ -263,11 +299,16 @@
 									"key": "images",
 									"value": "706c0364-6a82-4011-bea7-289f05b515db.jpeg,706c0364-6a82-4011-bea7-289f05b515db.jpeg",
 									"type": "text"
+								},
+								{
+									"key": "categories",
+									"value": "7,8",
+									"type": "text"
 								}
 							]
 						},
 						"url": {
-							"raw": "http://127.0.0.1:5000/productions",
+							"raw": "http://127.0.0.1:5000/admin/product",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -277,7 +318,215 @@
 							],
 							"port": "5000",
 							"path": [
-								"productions"
+								"admin",
+								"product"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "get all category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/admin/category",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"admin",
+								"category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create new category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "child 1",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "child desc 1",
+									"type": "text"
+								},
+								{
+									"key": "parentId",
+									"value": "7",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/admin/category",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"admin",
+								"category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get by id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "root",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "root desc",
+									"type": "text"
+								},
+								{
+									"key": "parentId",
+									"value": "0",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/admin/category/9",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"admin",
+								"category",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update category",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "root update",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "root update",
+									"type": "text"
+								},
+								{
+									"key": "parentId",
+									"value": "0",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/admin/category/5",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"admin",
+								"category",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "root update",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "root update",
+									"type": "text"
+								},
+								{
+									"key": "parentId",
+									"value": "0",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/admin/category/5",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"admin",
+								"category",
+								"5"
 							]
 						}
 					},
