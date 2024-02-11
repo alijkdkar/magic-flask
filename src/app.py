@@ -13,8 +13,8 @@ from .productions import urls
 
 
 # Hello World!
-@app.route('/')
-def hello():
+@app.route('/index')
+def index():
     return "Hello World!"
 
 if __name__ == "__main__":

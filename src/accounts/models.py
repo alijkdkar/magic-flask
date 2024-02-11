@@ -20,7 +20,7 @@ class Account(db.Model):
     dob          = db.Column(db.Date)
     country      = db.Column(db.String(100))
     phone_number = db.Column(db.String(20))
-
+    password  = db.Column(db.String(500), nullable=False,default="")
 
 # Validations => https://flask-validator.readthedocs.io/en/latest/index.html 
 #     @classmethod
@@ -43,3 +43,21 @@ class Account(db.Model):
 
     def __repr__(self):
         return "<%r>" % self.email
+    
+
+
+    def to_json(self):        
+        return {"name": self.username,
+                "email": self.email}
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):   
+        return True           
+
+    def is_anonymous(self):
+        return False          
+
+    def get_id(self):         
+        return str(self.id)

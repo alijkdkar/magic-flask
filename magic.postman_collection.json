@@ -7,6 +7,150 @@
 	},
 	"item": [
 		{
+			"name": "autjh",
+			"item": [
+				{
+					"name": "Account register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "behzad.bluekian@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "alijkdkar",
+									"type": "text"
+								},
+								{
+									"key": "country",
+									"value": "98",
+									"type": "text"
+								},
+								{
+									"key": "phone_number",
+									"value": "9132120832",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "behzad",
+									"type": "text"
+								},
+								{
+									"key": "dob",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/register",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "alijkdkar",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "behzad",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/login",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get current user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/current_user",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"current_user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/logout",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Account",
 			"item": [
 				{
@@ -38,7 +182,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\":\"behzad.bluekian@gmail.com\",\n    \"username\":\"alijkdkar\",\n    \"country\":98,\n    \"phone_number\":\"9132120832\"\n}"
+							"raw": "{\n    \"email\":\"behzad.bluekian@gmail.com\",\n    \"username\":\"alijkdkar\",\n    \"country\":98,\n    \"phone_number\":\"9132120832\",\n    \"password\":\"behzad\"\n}"
 						},
 						"url": {
 							"raw": "http://127.0.0.1:5000/accounts",
