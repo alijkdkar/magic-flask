@@ -31,7 +31,7 @@ def list_all_production_controller():
                     categoris.append(cat.toDict())
                 data['categories'] = categoris
                 response.append(data)
-        return   jsonify({"count":len(response),"data":response})
+        return   jsonify({"count":len(response),"list":response})
 
 def get_one_production_by_id_controller(prodId):
         product = Production.query.get(prodId)
