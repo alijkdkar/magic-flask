@@ -19,12 +19,12 @@
 							"formdata": [
 								{
 									"key": "email",
-									"value": "behzad.bluekian@gmail.com",
+									"value": "behzad2.bluekian@gmail.com",
 									"type": "text"
 								},
 								{
 									"key": "username",
-									"value": "alijkdkar",
+									"value": "alijkdkar2",
 									"type": "text"
 								},
 								{
@@ -47,6 +47,16 @@
 									"value": "",
 									"type": "text",
 									"disabled": true
+								},
+								{
+									"key": "role",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "culture",
+									"value": "en",
+									"type": "text"
 								}
 							]
 						},
@@ -77,7 +87,7 @@
 							"formdata": [
 								{
 									"key": "username",
-									"value": "alijkdkar",
+									"value": "alijkdkar2",
 									"type": "text"
 								},
 								{
