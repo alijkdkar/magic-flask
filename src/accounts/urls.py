@@ -41,3 +41,6 @@ def currentUser():
     if request.method == "GET":return OnlineUser()
     else: return 'Method is Not Allowed'
 
+# @app.before_request
+# def check_Permission():
+#     check_Permission()

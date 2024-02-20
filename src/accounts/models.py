@@ -1,4 +1,6 @@
 from sqlalchemy import inspect
+from sqlalchemy.dialects.postgresql import ENUM
+import enum
 from datetime import datetime
 # from flask_validator import ValidateEmail, ValidateString, ValidateCountry
 from sqlalchemy.orm import validates
@@ -6,6 +8,26 @@ from sqlalchemy.orm import validates
 from .. import db # from __init__.py
 
 # ----------------------------------------------- #
+
+class RoleEnum(enum.Enum):
+    Admin = 'admin'
+    SemiAmin = 'semiAdmin'
+    Manager = 'manager',
+    Blogger='blogger',
+    Simple = 'simple',
+    Guest = 'guest'
+    
+class Culture(enum.Enum):
+    FA='fa',
+    EN='en',
+    FR='fr'
+
+# culture_enum = ENUM('fa', 'en', 'fr', name='culture')
+
+# role_enum = ENUM( 'admin', 'semiAdmin', 'manager','blogger','simple', 'guest',name='role')
+
+
+
 
 # SQL Datatype Objects => https://docs.sqlalchemy.org/en/14/core/types.html
 class Account(db.Model):
@@ -21,13 +43,12 @@ class Account(db.Model):
     country      = db.Column(db.String(100))
     phone_number = db.Column(db.String(20))
     password  = db.Column(db.String(500), nullable=False,default="")
+    culture = db.Column(ENUM('fa', 'en','fe', name='Culture'), nullable=True)
+    role = db.Column(ENUM('admin', 'semiAdmin','manager','blogger','simple','guest', name='Role'), nullable=True)
 
-# Validations => https://flask-validator.readthedocs.io/en/latest/index.html 
-#     @classmethod
-#     def __declare_last__(cls):
-#         ValidateEmail(Account.email, True, True, "The email is not valid. Please check it") # True => Allow internationalized addresses, True => Check domain name resolution.
-#         ValidateString(Account.username, True, True, "The username type must be string")
-#         ValidateCountry(Account.country, True, True, "The country is not valid")
+    
+
+
 
 
 # Set an empty string to null for username field => https://stackoverflow.com/a/57294872
@@ -39,7 +60,7 @@ class Account(db.Model):
 
 # How to serialize SqlAlchemy PostgreSQL Query to JSON => https://stackoverflow.com/a/46180522
     def toDict(self):
-        return { c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs }
+        return { c.key:  getattr(self, c.key) for c in inspect(self).mapper.column_attrs if c.key != "password" }
 
     def __repr__(self):
         return "<%r>" % self.email
@@ -61,3 +82,17 @@ class Account(db.Model):
 
     def get_id(self):         
         return str(self.id)
+    
+    def is_admin(self):
+        #todo: check with Role
+        return True
+    
+    def get_culture(self):
+        if self.culture is None:
+            return 'fa'
+        return self.culture
+    
+    def get_role(self):
+        if self.role is None:
+            return 'guest'
+        return self.role

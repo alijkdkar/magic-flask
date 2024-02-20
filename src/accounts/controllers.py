@@ -5,8 +5,8 @@ from .. import login_manager
 from .models import Account
 from flask_login import login_user, logout_user
 from .. import bcrypt
-from flask import render_template, redirect, url_for, request, flash
-
+from flask import render_template, redirect, url_for, request, flash, abort
+from flask_login import current_user
 
 
 # ----------------------------------------------- #
@@ -19,7 +19,7 @@ def list_all_accounts_controller():
     accounts = Account.query.all()
     response = []
     for account in accounts: response.append(account.toDict())
-    return jsonify(response)
+    return jsonify({"count":len(response),"list": response})
 
 def create_account_controller():
     request_form = request.form.to_dict()
@@ -50,6 +50,8 @@ def create_account_controller():
                           country        = request_form['country'],
                           phone_number   = request_form['phone_number'],
                           password       = hashed_password,
+                          role = request_form['role'] or None, 
+                          culture = request_form['culture'] or None
                           )
     db.session.add(new_account)
     db.session.commit()
@@ -70,6 +72,8 @@ def update_account_controller(account_id):
     account.dob          = request_form['dob']
     account.country      = request_form['country']
     account.phone_number = request_form['phone_number']
+    account.role = request_form['role'] or None, 
+    account.culture = request_form['culture'] or None
     db.session.commit()
 
     response = Account.query.get(account_id).toDict()
@@ -119,14 +123,22 @@ def logout():
 
 
 
-from flask_login import current_user
 
+def CheckPermissions():
+    if  not current_user.is_authenticated:
+        abort(403)
+    
+    if  current_user.role == 'admin':
+        pass
 
 
 def OnlineUser():
     user_data = {
         'id': current_user.id,
-        'username': current_user.username
+        'username': current_user.username,
+        'isAdmin': current_user.is_admin(),
+        'loggedIn': current_user.is_authenticated(),
+        'culture':current_user.get_culture()
     }
     return jsonify(user_data), 200
 
