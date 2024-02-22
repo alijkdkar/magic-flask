@@ -124,12 +124,13 @@ def logout():
 
 
 
-def CheckPermissions():
+def CheckPermissionsFunc():
     if  not current_user.is_authenticated:
         abort(403)
     
     if  current_user.role == 'admin':
         pass
+        #todo must check every reqest role access managment
 
 
 def OnlineUser():

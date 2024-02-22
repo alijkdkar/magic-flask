@@ -35,7 +35,11 @@ def retrieve_update_destroy_productions(product_id):
     if request.method == 'PUT': return update_product_controller(product_id)
     if request.method == 'DELETE': return delete_product_controller(product_id)
     else: return 'Method is Not Allowed'
-    
+
+@app.route("/admin/product/<product_id>/feature", methods=['POST','GET', 'PUT', 'DELETE'])
+def add_feature(product_id):
+    if request.method == "POST": return AddProductFeatures(product_id)
+    else: return 'Method is Not Allowed'
 
     
 @app.route("/admin/storage", methods=['GET', 'POST'])

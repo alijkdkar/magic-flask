@@ -1,11 +1,12 @@
-from flask import request, jsonify
-import uuid,os
+from flask import request, jsonify,abort
+import uuid,os,json
 from werkzeug.utils import secure_filename
 from .. import minio
 from .. import db
 from ..utils.ImageProccessor import CoreImageAnalyzer
-from .models import Production,ProductionImage,Category,Tag
+from .models import Production,ProductionImage,Category,Tag,ProductionFeatures
 from sqlalchemy import inspect
+
 
 allowed_extention = ['jpg','jpeg','png',]
 
@@ -48,6 +49,8 @@ def get_one_production_by_id_controller(prodId):
         for cat in product.categorys:
             categoris.append(cat.toDict())
         data['categories'] = categoris
+        data['features']=product.getFeaturesWithTotoalPrice()
+
         return jsonify(data)
 
 def create_product_controller():
@@ -116,7 +119,50 @@ def delete_product_controller(product_id):
     return  jsonify("Product Deleted")
 
 
-# production
+
+def AddProductFeatures(product_id):
+    request_form = request.data.decode('utf-8')
+    product = Production.query.get(product_id)
+    if product is None:
+        abort(404)
+    try:
+        print(request_form)
+        json_data = json.loads(request_form)
+        print("after")
+        # Access the 'Features' array
+        features = json_data.get('Features')
+        print("its feature:",features)
+        # Process each feature
+        for feature in features:
+            feature_name = feature.get('name')
+            feature_description = feature.get('description')
+            feature_type = feature.get('feature_type')
+            feature_value = feature.get('value')
+            is_price_effect = feature.get('is_price_effect')
+            price_effect_value = feature.get('price_effect_value')
+            enable = feature.get('enable')
+            new_feature=ProductionFeatures(id=str(uuid.uuid4()),
+                           product_id = product.id,
+                           name = feature_name,
+                           description = feature_description,
+                           feature_type = str(feature_type), #ProductFeatureType(feature_type),
+                           value = feature_value,
+                           is_price_effect = bool(is_price_effect),
+                           enable = bool(enable),
+                           price_effect_value = price_effect_value
+                           )
+            db.session.add(new_feature)
+        db.session.commit()
+
+                
+    except json.JSONDecodeError as ex :
+    # except Exception as  ex :
+        print("Data is not in JSON format",ex.msg)
+        abort(500)
+    return jsonify("Feature added successfully"),201
+
+
+###### production ######
 
 
 def upload_file():
@@ -183,7 +229,7 @@ def allowed_file(fileName:str):
 
 
 
-#region Category
+#######region Category#######
 def create_category():
     request_form = request.form.to_dict()
     if 'parentId' in request_form:
@@ -235,5 +281,5 @@ def DeleteCategory(id):
 
 
 #Todo Crud
-
+######### end Category #########
 

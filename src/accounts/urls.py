@@ -21,6 +21,7 @@ def retrieve_update_destroy_accounts(account_id):
 
 @app.route('/login', methods=['POST'])
 def AuthApi():
+    print("login")
     if request.method in ["POST"]:return login()
     else: return 'Method is Not Allowed'
 
@@ -41,6 +42,8 @@ def currentUser():
     if request.method == "GET":return OnlineUser()
     else: return 'Method is Not Allowed'
 
-# @app.before_request
-# def check_Permission():
-#     check_Permission()
+@app.before_request
+def check_Permission():
+    print('in check permission',request)
+    if '/login' not in request.url:
+        CheckPermissionsFunc()
