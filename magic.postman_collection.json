@@ -316,6 +316,104 @@
 			"name": "production",
 			"item": [
 				{
+					"name": "Feature",
+					"item": [
+						{
+							"name": "Add Feature to Product",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"Features\":[\n    {\n      \"name\":\"feature3\",\n      \"description\":\"desc 3\",\n      \"feature_type\": \"color\",\n      \"value\":\"dasdasd\",\n      \"is_price_effect\": \"True\",\n      \"price_effect_value\": 10000,\n      \"enable\": \"True\"\n    },\n     {\n      \"name\":\"feature2\",\n      \"description\":\"desc 2\",\n      \"feature_type\": \"color\",\n      \"value\":\"A3\",\n      \"is_price_effect\": \"True\",\n      \"price_effect_value\": 5000,\n      \"enable\": \"True\"\n    },\n    {\n      \"name\":\"feature4\",\n      \"description\":\"desc 6\",\n      \"feature_type\": \"quality\",\n      \"value\":\"A3\",\n      \"is_price_effect\": \"True\",\n      \"price_effect_value\": 5000,\n      \"enable\": \"True\"\n    }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/admin/product/95ea79b3-be93-4c66-8b2b-8b7faa99141d/feature",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"admin",
+										"product",
+										"95ea79b3-be93-4c66-8b2b-8b7faa99141d",
+										"feature"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Feature to Product",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"Features\":[\n    {\n       \"id\": \"f0641277-3471-48ee-9b1e-51527688f0af\",\n      \"name\":\"feature3\",\n      \"description\":\"desc 3\",\n      \"feature_type\": \"color\",\n      \"value\":\"vla\",\n      \"is_price_effect\": \"True\",\n      \"price_effect_value\": 10000,\n      \"enable\": \"True\"\n    },\n     {\n       \"id\": \"0f15f856-5b0b-47e3-bd75-e7963e16bf10\",\n      \"name\":\"feature2\",\n      \"description\":\"desc 2\",\n      \"feature_type\": \"color\",\n      \"value\":\"A1\",\n      \"is_price_effect\": \"True\",\n      \"price_effect_value\": 5000,\n      \"enable\": \"True\"\n    },\n    {\n       \"id\": \"71ef6e43-bd27-4343-b06c-70ca432b148d\",\n      \"name\":\"feature4\",\n      \"description\":\"desc 6\",\n      \"feature_type\": \"quality\",\n      \"value\":\"A0\",\n      \"is_price_effect\": \"True\",\n      \"price_effect_value\": 5000,\n      \"enable\": \"True\"\n    }\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "http://127.0.0.1:5000/admin/product/95ea79b3-be93-4c66-8b2b-8b7faa99141d/feature",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"admin",
+										"product",
+										"95ea79b3-be93-4c66-8b2b-8b7faa99141d",
+										"feature"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Product Features",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "http://127.0.0.1:5000/admin/product/95ea79b3-be93-4c66-8b2b-8b7faa99141d/feature",
+									"protocol": "http",
+									"host": [
+										"127",
+										"0",
+										"0",
+										"1"
+									],
+									"port": "5000",
+									"path": [
+										"admin",
+										"product",
+										"95ea79b3-be93-4c66-8b2b-8b7faa99141d",
+										"feature"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
 					"name": "get all",
 					"request": {
 						"method": "GET",
@@ -354,7 +452,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:5000/admin/product/0c621cb2-ea2e-4f73-84f0-4298c8815a94",
+							"raw": "http://127.0.0.1:5000/admin/product/95ea79b3-be93-4c66-8b2b-8b7faa99141d",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -366,7 +464,7 @@
 							"path": [
 								"admin",
 								"product",
-								"0c621cb2-ea2e-4f73-84f0-4298c8815a94"
+								"95ea79b3-be93-4c66-8b2b-8b7faa99141d"
 							]
 						}
 					},
