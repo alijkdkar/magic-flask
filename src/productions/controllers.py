@@ -162,6 +162,58 @@ def AddProductFeatures(product_id):
     return jsonify("Feature added successfully"),201
 
 
+
+def GetAllFeatureOfThisProduct(product_id):
+    product =Production.query.get(product_id)
+    if product==None:
+        abort(404)
+    features = ProductionFeatures.query.filter_by(product_id=str(product_id)).all()
+    response = []
+    for x in features:
+        response.append(x.toDict())
+    return jsonify({"count":len(response),"list":response})
+
+def UpdateProductFeatureById(product_id):
+    product =Production.query.get(product_id)
+    if product==None:
+        abort(404)
+    try:
+        request_form = request.data.decode('utf-8')
+        print(request_form)
+        json_data = json.loads(request_form)
+        # Access the 'Features' array
+        features = json_data.get('Features')
+
+        # Process each feature
+        for feature in features:
+            feature_id = feature.get('id')
+            feature_name = feature.get('name')
+            feature_description = feature.get('description')
+            feature_type = feature.get('feature_type')
+            feature_value = feature.get('value')
+            is_price_effect = bool(feature.get('is_price_effect'))
+            price_effect_value = feature.get('price_effect_value')
+            enable = bool(feature.get('enable'))
+            featureDb =ProductionFeatures.query.get(feature_id)
+            if featureDb is not None:
+                featureDb.setValues(name=feature_name,description=feature_description,type=feature_type,value=feature_value,is_price_effect=is_price_effect,price_effect_value=price_effect_value,enable=enable)
+
+
+
+        db.session.commit()
+
+                
+    except json.JSONDecodeError as ex :
+    # except Exception as  ex :
+        print("Data is not in JSON format",ex.msg)
+        abort(500)
+    return jsonify("Feature updated successfully"),200
+
+def DeleteOneFeatureFromTheList(product_id,feature_id):
+    pass
+
+
+
 ###### production ######
 
 

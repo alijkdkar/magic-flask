@@ -134,3 +134,14 @@ class ProductionFeatures(db.Model):
         
         def __repr__(self):
                 return "<%r>" % self.name
+        
+
+        def setValuesFromDict(self, data: dict) -> None:
+                for key, value in data.items():
+                        if hasattr(self, key):
+                                setattr(self, key, value)
+
+        def setValues(self,**kwargs):
+                for key, value in kwargs.items():
+                        if hasattr(self, key):
+                                setattr(self, key, value)
