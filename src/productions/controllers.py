@@ -31,6 +31,7 @@ def list_all_production_controller():
                 for cat in pro.categorys:
                     categoris.append(cat.toDict())
                 data['categories'] = categoris
+                data['features']=pro.getFeaturesWithTotoalPrice()
                 response.append(data)
         return   jsonify({"count":len(response),"list":response})
 
@@ -54,23 +55,25 @@ def get_one_production_by_id_controller(prodId):
         return jsonify(data)
 
 def create_product_controller():
-    request_form = request.form.to_dict()
+    # request_form = request.form.to_dict()
+    request_form1 = request.data.decode('utf-8')
     id = str(uuid.uuid4())
     print(id)
+    json_data = json.loads(request_form1)
     new_production = Production(
                           id = id,
-                          name = request_form['name'],
-                          description = request_form['description'],
-                          image = request_form['image'],
-                          price = request_form['price'],
-                          unit = request_form['unit'],
-                          material = request_form['material'],
-                          code = request_form['code'],
-                          color = request_form['color'],
-                          stock  = request_form['stock'],
+                          name = json_data.get('name'),
+                          description = json_data.get('description'),
+                          image = json_data.get('image'),
+                          price = json_data.get('price'),
+                          unit = json_data.get('unit'),
+                          material = json_data.get('materil'),
+                          code = json_data.get('code'),
+                          color = json_data.get('color'),
+                          stock  = json_data.get('stock'),
                           )
-    imagesId = request_form['images'].split(',')
-    
+    imagesId = json_data.get('images')
+    print("images :",imagesId,new_production.id)
     for x in imagesId:
         newImageId = str(uuid.uuid4())
         newProductImage= ProductionImage(
@@ -81,11 +84,13 @@ def create_product_controller():
               type = 'Image'
         )
         db.session.add(newProductImage)
+    
+    AddProductFeatures(id)
 
     db.session.add(new_production)
     db.session.commit()
     
-    categorisIds = request_form['categories'].split(',')
+    categorisIds = json_data.get('categories')
     print(categorisIds)
     for catId in categorisIds:
         cat =Category.query.get(catId)
@@ -122,9 +127,9 @@ def delete_product_controller(product_id):
 
 def AddProductFeatures(product_id):
     request_form = request.data.decode('utf-8')
-    product = Production.query.get(product_id)
-    if product is None:
-        abort(404)
+    # product = Production.query.get(product_id)
+    # if product is None:
+    #     abort(404)
     try:
         print(request_form)
         json_data = json.loads(request_form)
@@ -142,7 +147,7 @@ def AddProductFeatures(product_id):
             price_effect_value = feature.get('price_effect_value')
             enable = feature.get('enable')
             new_feature=ProductionFeatures(id=str(uuid.uuid4()),
-                           product_id = product.id,
+                           product_id = product_id,
                            name = feature_name,
                            description = feature_description,
                            feature_type = str(feature_type), #ProductFeatureType(feature_type),
@@ -152,7 +157,7 @@ def AddProductFeatures(product_id):
                            price_effect_value = price_effect_value
                            )
             db.session.add(new_feature)
-        db.session.commit()
+        # db.session.commit()
 
                 
     except json.JSONDecodeError as ex :

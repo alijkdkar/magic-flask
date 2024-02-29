@@ -19,12 +19,12 @@
 							"formdata": [
 								{
 									"key": "email",
-									"value": "behzad2.bluekian@gmail.com",
+									"value": "behzad234.bluekian@gmail.com",
 									"type": "text"
 								},
 								{
 									"key": "username",
-									"value": "alijkdkar2",
+									"value": "alijkdkar234",
 									"type": "text"
 								},
 								{
@@ -40,22 +40,6 @@
 								{
 									"key": "password",
 									"value": "behzad",
-									"type": "text"
-								},
-								{
-									"key": "dob",
-									"value": "",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "role",
-									"value": "admin",
-									"type": "text"
-								},
-								{
-									"key": "culture",
-									"value": "en",
 									"type": "text"
 								}
 							]
@@ -87,7 +71,7 @@
 							"formdata": [
 								{
 									"key": "username",
-									"value": "alijkdkar2",
+									"value": "alijkdkar",
 									"type": "text"
 								},
 								{
@@ -169,7 +153,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:5000/accounts",
+							"raw": "http://127.0.0.1:5000/admin/accounts",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -179,6 +163,7 @@
 							],
 							"port": "5000",
 							"path": [
+								"admin",
 								"accounts"
 							]
 						}
@@ -191,11 +176,53 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\":\"behzad.bluekian@gmail.com\",\n    \"username\":\"alijkdkar\",\n    \"country\":98,\n    \"phone_number\":\"9132120832\",\n    \"password\":\"behzad\"\n}"
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "behzad2.bluekian@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "alijkdkar2",
+									"type": "text"
+								},
+								{
+									"key": "country",
+									"value": "98",
+									"type": "text"
+								},
+								{
+									"key": "phone_number",
+									"value": "9132120832",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "behzad",
+									"type": "text"
+								},
+								{
+									"key": "dob",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "role",
+									"value": "admin",
+									"type": "text"
+								},
+								{
+									"key": "culture",
+									"value": "en",
+									"type": "text"
+								}
+							]
 						},
 						"url": {
-							"raw": "http://127.0.0.1:5000/accounts",
+							"raw": "http://127.0.0.1:5000/admin/accounts",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -205,6 +232,7 @@
 							],
 							"port": "5000",
 							"path": [
+								"admin",
 								"accounts"
 							]
 						}
@@ -217,7 +245,7 @@
 						"method": "DELETE",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:5000/accounts/3d1301a4-a98f-42af-95f7-1f6c0a65d169",
+							"raw": "http://127.0.0.1:5000/admin/accounts/3d1301a4-a98f-42af-95f7-1f6c0a65d169",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -227,6 +255,7 @@
 							],
 							"port": "5000",
 							"path": [
+								"admin",
 								"accounts",
 								"3d1301a4-a98f-42af-95f7-1f6c0a65d169"
 							]
@@ -240,7 +269,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:5000/accounts/cf7454ce-d9bf-446b-a501-be59cb166c88",
+							"raw": "http://127.0.0.1:5000/admin/accounts/57bcfc50-954c-4f6e-9d0f-14983bb96052",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -250,8 +279,9 @@
 							],
 							"port": "5000",
 							"path": [
+								"admin",
 								"accounts",
-								"cf7454ce-d9bf-446b-a501-be59cb166c88"
+								"57bcfc50-954c-4f6e-9d0f-14983bb96052"
 							]
 						}
 					},
@@ -293,7 +323,7 @@
 							]
 						},
 						"url": {
-							"raw": "http://127.0.0.1:5000/accounts/cf7454ce-d9bf-446b-a501-be59cb166c88",
+							"raw": "http://127.0.0.1:5000/admin/accounts/cf7454ce-d9bf-446b-a501-be59cb166c88",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -303,6 +333,7 @@
 							],
 							"port": "5000",
 							"path": [
+								"admin",
 								"accounts",
 								"cf7454ce-d9bf-446b-a501-be59cb166c88"
 							]
@@ -452,7 +483,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:5000/admin/product/95ea79b3-be93-4c66-8b2b-8b7faa99141d",
+							"raw": "http://127.0.0.1:5000/admin/product/4b9049a3-4dcf-47a4-83b3-bfeaf88d523d",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -464,7 +495,7 @@
 							"path": [
 								"admin",
 								"product",
-								"95ea79b3-be93-4c66-8b2b-8b7faa99141d"
+								"4b9049a3-4dcf-47a4-83b3-bfeaf88d523d"
 							]
 						}
 					},
@@ -500,64 +531,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "name",
-									"value": "test nnnn",
-									"type": "text"
-								},
-								{
-									"key": "description",
-									"value": "desc",
-									"type": "text"
-								},
-								{
-									"key": "price",
-									"value": "100000",
-									"type": "text"
-								},
-								{
-									"key": "unit",
-									"value": "Tona",
-									"type": "text"
-								},
-								{
-									"key": "material",
-									"value": "material",
-									"type": "text"
-								},
-								{
-									"key": "code",
-									"value": "code1",
-									"type": "text"
-								},
-								{
-									"key": "color",
-									"value": "NONE",
-									"type": "text"
-								},
-								{
-									"key": "stock",
-									"value": "AVAILABLE",
-									"type": "text"
-								},
-								{
-									"key": "image",
-									"value": "36e2ea9e-13b2-4152-be6e-016bda815eae",
-									"type": "text"
-								},
-								{
-									"key": "images",
-									"value": "706c0364-6a82-4011-bea7-289f05b515db.jpeg,706c0364-6a82-4011-bea7-289f05b515db.jpeg",
-									"type": "text"
-								},
-								{
-									"key": "categories",
-									"value": "7,8",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"new with picture\",\n    \"description\": \"desc\",\n    \"price\": 100000,\n    \"unit\": \"Tona\",\n    \"material\": \"material\",\n    \"code\": \"code1\",\n    \"color\": \"NONE\",\n    \"stock\": \"AVAILABLE\",\n    \"image\": \"36e2ea9e-13b2-4152-be6e-016bda815eae\",\n    \"images\": [\n        \"706c0364-6a82-4011-bea7-289f05b515db.jpeg\",\n        \"706c0364-6a82-4011-bea7-289f05b515db.jpeg\"\n    ],\n    \"categories\": [\n        \"7\",\n        \"8\"\n    ],\n    \"Features\": [\n        {\n            \"name\": \"feature3\",\n            \"description\": \"desc 3\",\n            \"feature_type\": \"color\",\n            \"value\": \"dasdasd\",\n            \"is_price_effect\": \"True\",\n            \"price_effect_value\": 10000,\n            \"enable\": \"True\"\n        },\n        {\n            \"name\": \"feature2\",\n            \"description\": \"desc 2\",\n            \"feature_type\": \"color\",\n            \"value\": \"A3\",\n            \"is_price_effect\": \"True\",\n            \"price_effect_value\": 5000,\n            \"enable\": \"True\"\n        },\n        {\n            \"name\": \"feature4\",\n            \"description\": \"desc 6\",\n            \"feature_type\": \"quality\",\n            \"value\": \"A3\",\n            \"is_price_effect\": \"True\",\n            \"price_effect_value\": 5000,\n            \"enable\": \"True\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "http://127.0.0.1:5000/admin/product",

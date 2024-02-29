@@ -21,7 +21,9 @@ def list_all_accounts_controller():
     for account in accounts: response.append(account.toDict())
     return jsonify({"count":len(response),"list": response})
 
-def create_account_controller():
+
+
+def create_account_controller_admin():
     request_form = request.form.to_dict()
     id = str(uuid.uuid4())
     
@@ -59,9 +61,49 @@ def create_account_controller():
     response = Account.query.get(id).toDict()
     return jsonify(response),201
 
+def create_account_controller():
+    request_form = request.form.to_dict()
+    id = str(uuid.uuid4())
+    
+    username = request_form['username']
+    email = request_form['email']
+    password = request_form['password']
+    if not username or not password:
+        return jsonify({'message': 'Missing username or password'}), 400
+
+    existing_user = Account.query.filter_by(username=username).first()
+    if existing_user:
+        return jsonify({'message': 'Username already exists'}), 400
+    
+    existing_user = Account.query.filter_by(email=email).first()
+    if existing_user:
+        return jsonify({'message': 'Username already exists'}), 400
+
+
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    new_account = Account(
+                            id             = id,
+                            email          = request_form['email'],
+                            username       = request_form['username'],
+                            #   dob            = request_form['dob'],
+                            country        = request_form['country'],
+                            phone_number   = request_form['phone_number'],
+                            password       = hashed_password,
+                            role = 'simple', 
+                            culture = 'fa'
+                          )
+    db.session.add(new_account)
+    db.session.commit()
+
+    response = Account.query.get(id).toDict()
+    return jsonify(response),201
+
 def retrieve_account_controller(account_id):
-    response = Account.query.get(account_id).toDict()
-    return jsonify(response)
+    response = Account.query.get(account_id)
+    if response is None:
+        abort(404)
+    return jsonify(response.toDict())
 
 def update_account_controller(account_id):
     request_form = request.form.to_dict()
