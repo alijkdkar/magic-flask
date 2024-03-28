@@ -16,7 +16,7 @@ bcrypt = Bcrypt()
 
 def create_app(config_mode):
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, supports_credentials=True,origins=['*'])
     app.secret_key = 'what is my secret value i donst knows'
     app.config.from_object(config[config_mode])
 
