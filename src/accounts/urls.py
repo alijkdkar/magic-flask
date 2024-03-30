@@ -45,5 +45,6 @@ def currentUser():
 @app.before_request
 def check_Permission():
     print('in check permission',request)
-    if '/login' not in request.url:
-        CheckPermissionsFunc()
+    # request.headers.add('Access-Control-Allow-Credentials','true')
+    # if '/login' not in request.url:
+    #     CheckPermissionsFunc()
