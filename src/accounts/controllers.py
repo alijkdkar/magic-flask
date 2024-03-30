@@ -167,11 +167,11 @@ def logout():
 
 
 def CheckPermissionsFunc():
-    if  not current_user.is_authenticated:
+    if request.method not in ['GET','POST','PUT','DELETE'] or  current_user.is_authenticated ==False:
         abort(403)
     
-    if  current_user.role == 'admin':
-        pass
+    # if  current_user.role == 'admin':
+    #     pass
         #todo must check every reqest role access managment
 
 
