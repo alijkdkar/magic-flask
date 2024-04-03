@@ -1,3 +1,5 @@
 myVenv/
 *.meta
 *.pyc
+/volumes
+

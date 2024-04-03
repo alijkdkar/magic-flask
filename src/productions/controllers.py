@@ -4,13 +4,16 @@ from werkzeug.utils import secure_filename
 from .. import minio
 from .. import db
 from ..utils.ImageProccessor import CoreImageAnalyzer
+from ..utils.milvus import MilvuesClient
+
 from .models import Production,ProductionImage,Category,Tag,ProductionFeatures
 from sqlalchemy import inspect
 
 
 allowed_extention = ['jpg','jpeg','png',]
+milvus=MilvuesClient().connect()
 
-# production
+#### production #####
 
 def list_all_production_controller():
         pageSize = request.args.get('pageSize')
@@ -101,7 +104,6 @@ def create_product_controller():
     response = Production.query.get(id).toDict()
     return jsonify(response)
 
-
 def update_product_controller(product_id):
     productDb = Production.query.get(product_id)
     productDb.setValuesFromDict(request.form)
@@ -122,8 +124,6 @@ def delete_product_controller(product_id):
     db.session.delete(product)
     db.session.commit()
     return  jsonify("Product Deleted")
-
-
 
 def AddProductFeatures(product_id):
     request_form = request.data.decode('utf-8')
@@ -165,8 +165,6 @@ def AddProductFeatures(product_id):
         print("Data is not in JSON format",ex.msg)
         abort(500)
     return jsonify("Feature added successfully"),201
-
-
 
 def GetAllFeatureOfThisProduct(product_id):
     product =Production.query.get(product_id)
@@ -217,9 +215,7 @@ def UpdateProductFeatureById(product_id):
 def DeleteOneFeatureFromTheList(product_id,feature_id):
     pass
 
-
-
-###### production ######
+###### production-END ######
 
 
 def upload_file():
@@ -240,6 +236,8 @@ def upload_file():
             minio.Upload_File(file=file)
             feature = CoreImageAnalyzer().FeattureExtraction(file=file)
             print(feature)
+            ids = milvus.insert_vectors(file.filename,feature)
+            print('milvus:',ids)
             return jsonify({"id":file.filename})
     return '''
     <!doctype html>
@@ -250,7 +248,6 @@ def upload_file():
       <input type=submit value=Upload>
     </form>
     '''
-
 
 def search_by_file():
     if request.method == 'POST':
@@ -297,8 +294,6 @@ def create_category():
     db.session.commit()
     return jsonify(cat.toDict())
 
-
-
 def  getAllCategories():
     categories = Category.query.all()
     result = []
@@ -312,7 +307,6 @@ def GetCategoryById(id):
         return jsonify({"error": "Not Found Exception"}),404
      else :
         return jsonify(cat.toDict())  
-
 
 def UpdateCategory(id):
     cat = Category.query.get(id)
@@ -335,7 +329,6 @@ def DeleteCategory(id):
           db.session.delete(cat)
           db.session.commit()
           return  jsonify("Category Deleted")
-
 
 #Todo Crud
 ######### end Category #########
