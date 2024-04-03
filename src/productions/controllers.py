@@ -6,6 +6,8 @@ from .. import db
 from ..utils.ImageProccessor import CoreImageAnalyzer
 from ..utils.milvus import MilvuesClient
 
+from ..utils.milvus import MilvuesClient
+
 from .models import Production,ProductionImage,Category,Tag,ProductionFeatures
 from sqlalchemy import inspect
 
@@ -277,20 +279,21 @@ def upload_file():
             print(feature)
             ids = milvus.insert_vectors(file.filename,feature)
             print('milvus:',ids)
-            return jsonify({"id":file.filename})
+            fileUrl = minio.GetFileUrl(fileName=file.filename)
+            return jsonify({"id":file.filename,"url":fileUrl})
         else:
             return jsonify({"file extention is not allowed"}),400
     else:
         print('in else ')
-        return '''
-        <!doctype html>
-        <title>Upload new File</title>
-        <h1>Upload new File</h1>
-        <form method=post enctype=multipart/form-data>
-        <input type=file name=file>
-        <input type=submit value=Upload>
-        </form>
-        '''
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
 
 def search_by_file():
     if request.method == 'POST':
@@ -377,6 +380,8 @@ def GetCategoryById(id):
         return jsonify({"error": "Not Found Exception"}),404
      else :
         return jsonify(cat.toDict())
+
+
 
 def UpdateCategory(id):
     cat = Category.query.get(id)
