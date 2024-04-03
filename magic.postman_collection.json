@@ -153,7 +153,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:5000/admin/accounts",
+							"raw": "http://127.0.0.1:5000/admin/account",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -164,7 +164,7 @@
 							"port": "5000",
 							"path": [
 								"admin",
-								"accounts"
+								"account"
 							]
 						}
 					},
@@ -269,7 +269,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:5000/admin/accounts/57bcfc50-954c-4f6e-9d0f-14983bb96052",
+							"raw": "http://127.0.0.1:5000/admin/account/57bcfc50-954c-4f6e-9d0f-14983bb96052",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -280,7 +280,7 @@
 							"port": "5000",
 							"path": [
 								"admin",
-								"accounts",
+								"account",
 								"57bcfc50-954c-4f6e-9d0f-14983bb96052"
 							]
 						}
@@ -556,6 +556,64 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"new with picture zzzzzzzzzzzzz\",\n    \"description\": \"desc\",\n    \"price\": 100000,\n    \"unit\": \"Tona\",\n    \"material\": \"material\",\n    \"code\": \"code112\",\n    \"color\": \"NONE\",\n    \"stock\": \"AVAILABLE\",\n    \"image\": \"36e2ea9e-13b2-4152-be6e-016bda815eae\",\n    \"images\": [\n        \"706c0364-6a82-4011-bea7-289f05b515db.jpeg\",\n        \"706c0364-6a82-4011-bea7-289f05b515db.jpeg\"\n    ],\n    \"categories\": [\n        \"7\",\n        \"8\"\n    ],\n    \"Features\": [\n        {\n            \"name\": \"feature3\",\n            \"description\": \"desc 3\",\n            \"feature_type\": \"color\",\n            \"value\": \"dasdasd\",\n            \"is_price_effect\": \"True\",\n            \"price_effect_value\": 10000,\n            \"enable\": \"True\"\n        },\n        {\n            \"name\": \"feature2\",\n            \"description\": \"desc 2\",\n            \"feature_type\": \"color\",\n            \"value\": \"A3\",\n            \"is_price_effect\": \"True\",\n            \"price_effect_value\": 5000,\n            \"enable\": \"True\"\n        },\n        {\n            \"name\": \"feature4\",\n            \"description\": \"desc 6\",\n            \"feature_type\": \"quality\",\n            \"value\": \"A3\",\n            \"is_price_effect\": \"True\",\n            \"price_effect_value\": 5000,\n            \"enable\": \"True\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/admin/product/95ea79b3-be93-4c66-8b2b-8b7faa99141d",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"admin",
+								"product",
+								"95ea79b3-be93-4c66-8b2b-8b7faa99141d"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Code",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/admin/product/check_code/code1",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"admin",
+								"product",
+								"check_code",
+								"code1"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -591,24 +649,13 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "child 1",
-									"type": "text"
-								},
-								{
-									"key": "description",
-									"value": "child desc 1",
-									"type": "text"
-								},
-								{
-									"key": "parentId",
-									"value": "7",
-									"type": "text"
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"child 1\",\n    \"description\": \"child desc 1\"\n    // \"parentId\": \"9\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
 							"raw": "http://127.0.0.1:5000/admin/category",
@@ -681,28 +728,16 @@
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "root update",
-									"type": "text"
-								},
-								{
-									"key": "description",
-									"value": "root update",
-									"type": "text"
-								},
-								{
-									"key": "parentId",
-									"value": "0",
-									"type": "text",
-									"disabled": true
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"child 13333\",\n    \"description\": \"child desc 133333\",\n    \"parentId\": \"8\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
 								}
-							]
+							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:5000/admin/category/5",
+							"raw": "http://127.0.0.1:5000/admin/category/14",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -714,7 +749,7 @@
 							"path": [
 								"admin",
 								"category",
-								"5"
+								"14"
 							]
 						}
 					},
@@ -725,28 +760,8 @@
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "title",
-									"value": "root update",
-									"type": "text"
-								},
-								{
-									"key": "description",
-									"value": "root update",
-									"type": "text"
-								},
-								{
-									"key": "parentId",
-									"value": "0",
-									"type": "text"
-								}
-							]
-						},
 						"url": {
-							"raw": "http://127.0.0.1:5000/admin/category/5",
+							"raw": "http://127.0.0.1:5000/admin/category/9",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -758,7 +773,45 @@
 							"path": [
 								"admin",
 								"category",
-								"5"
+								"9"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "storage",
+			"item": [
+				{
+					"name": "uploadFile",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/leo/Downloads/1663443800387.jpeg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/admin/storage",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"admin",
+								"storage"
 							]
 						}
 					},
