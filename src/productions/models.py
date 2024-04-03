@@ -29,6 +29,12 @@ class Category(db.Model):
                 for key, value in data.items():
                         if hasattr(self, key):
                                 setattr(self, key, value)
+        
+        def setValuesFromJson(self, data) -> None:
+                self.title = data.get('title')
+                self.description = data.get('description')
+                if data.get('parentId') is not None:
+                        self.parent_id = data.get('parentId')
 
 post_tag = db.Table('product_tag',
                     db.Column('production_id', db.String(50), db.ForeignKey('production.id')),
@@ -82,6 +88,13 @@ class Production(db.Model):
                 for key, value in data.items():
                         if hasattr(self, key):
                                 setattr(self, key, value)
+        
+        
+        def setValuesFromJson(self, data) -> None:
+                for prop_name, prop_value in self.__dict__.items():
+                        if data.get(prop_name) is not None:
+                                setattr(self,prop_name,data.get(prop_name))
+
         def __repr__(self):
                 return "<%r>" % self.name
         
