@@ -40,15 +40,19 @@ def list_all_production_controller():
 
 def get_one_production_by_id_controller(prodId):
         product = Production.query.get(prodId)
-        product.imagesUrl =[]
+        imagesUrl =[]
+        
         for idx,x in enumerate(product.images):
-            print(idx,minio.GetFileUrl(x.file_id))
-            product.imagesUrl.append(minio.GetFileUrl(x.file_id))
+            # print(idx,minio.GetFileUrl(x.file_id))
+            j = ({"file_id":x.file_id,"url": minio.GetFileUrl(x.file_id)})
+            print("ccccc",j,"ccccc")
+            imagesUrl.append(j)
 
-
+        print("xxxxxx",imagesUrl)
         data=product.toDict()
-        data["imagesUrls"]=product.imagesUrl
-        data['image']=minio.GetFileUrl(product.image)
+        # data["imagesUrls"]=product.imagesUrl
+        data["images"]=imagesUrl
+        data['image']=({"file_id":product.image,"url": minio.GetFileUrl(product.image)}) #minio.GetFileUrl(product.image)
         categoris=[]
         for cat in product.categorys:
             categoris.append(cat.toDict())
@@ -63,6 +67,11 @@ def create_product_controller():
     id = str(uuid.uuid4())
     print(id)
     json_data = json.loads(request_form1)
+
+    if json_data.get('code') is not None and CheckCodeUsed(json_data['code']):
+        return  jsonify({"status":"bad request","msg":"duplicat code"}),400
+
+
     new_production = Production(
                           id = id,
                           name = json_data.get('name'),
@@ -106,7 +115,9 @@ def create_product_controller():
 
 def update_product_controller(product_id):
     productDb = Production.query.get(product_id)
-    productDb.setValuesFromDict(request.form)
+    vv= json.loads(request.data.decode("utf-8"))
+    # productDb.setValuesFromDict(request.form)
+    productDb.setValuesFromJson(vv)
     db.session.commit()
     return jsonify({"Message":"Success"}),201
 
@@ -280,16 +291,23 @@ def allowed_file(fileName:str):
         return True
      return False
 
-
+def CheckCodeUsed(code):
+        print(code)
+        p=Production.query.filter_by(code=code).first()
+        print("pppp",p is None)
+        return jsonify( p is not None)
 
 
 #######region Category#######
 def create_category():
-    request_form = request.form.to_dict()
-    if 'parentId' in request_form:
-        cat = Category(title=request_form['title'],description=request_form['description'],parent_id=request_form['parentId'])
+    request_form1 = request.data.decode('utf-8')
+    json_data = json.loads(request_form1)
+    # print(json_data.get('parentId'))
+    
+    if  json_data.get('parentId') is not None:
+        cat = Category(title=json_data.get('title'),description=json_data.get('description'),parent_id=json_data.get('parentId'))
     else:
-        cat = Category(title=request_form['title'],description=request_form['description'])
+        cat = Category(title=json_data.get('title'),description=json_data.get('description'))
     db.session.add(cat)
     db.session.commit()
     return jsonify(cat.toDict())
@@ -299,7 +317,8 @@ def  getAllCategories():
     result = []
     for cat in categories:
          result.append(cat.toDict())
-    return  jsonify(result)
+    return jsonify({"count":len(result),"list":result})
+    
 
 def GetCategoryById(id):
      cat = Category.query.get(id)
@@ -312,7 +331,8 @@ def UpdateCategory(id):
     cat = Category.query.get(id)
     # if  cat.parent_id != None:
     #       return jsonify({"error": "This category has subcategories and cannot be deleted"}),404
-    cat.setValuesFromDict(request.form)
+    # cat.setValuesFromDict(request.form)
+    cat.setValuesFromJson(json.loads(request.data.decode('utf-8')))
     try:
         db.session.commit()
     except Exception as ex:

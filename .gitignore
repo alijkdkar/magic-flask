@@ -1,5 +1,8 @@
 myVenv/
 *.meta
 *.pyc
-/volumes
-
+volumes/
+src/accounts/__pycache__/urls.cpython-310.pyc
+src/__pycache__
+src/accounts/__pycache__
+src/accounts/__pycache__/*.pyc

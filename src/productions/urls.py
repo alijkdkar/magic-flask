@@ -50,6 +50,12 @@ def add_feature(product_id):
     elif request.method == "Delete": return DeleteOneFeatureFromTheList(product_id)
     else: return 'Method is Not Allowed'
 
+@app.route("/admin/product/check_code/<code>", methods = ["GET"])
+def check_code_used(code):
+    if request.method == "GET":
+        return CheckCodeUsed(code)
+    else:
+        return 'Method is Not Allowed'
 
 
     
