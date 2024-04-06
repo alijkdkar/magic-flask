@@ -241,26 +241,30 @@ def upload_file():
         file = request.files['file']
         # If the user does not select a file, the browser submits an
         # empty file without a filename.
+        print(file.filename)
         if file.filename == '':
-            return jsonify({"Bad Request"})
-        if file and allowed_file(file.filename):
+            return jsonify({"Bad Request"}),400
+        if  file is not None and  allowed_file(file.filename.lower()):
+            print('in allowd fiile')
             filename = secure_filename(file.filename)
             # upload to minio and return id 
             filename,extention = os.path.splitext(file.filename)
             file.filename=str(uuid.uuid4())+extention
             minio.Upload_File(file=file)
-            feature = CoreImageAnalyzer().FeattureExtraction(file=file)
-            print(feature)
             return jsonify({"id":file.filename})
-    return '''
-    <!doctype html>
-    <title>Upload new File</title>
-    <h1>Upload new File</h1>
-    <form method=post enctype=multipart/form-data>
-      <input type=file name=file>
-      <input type=submit value=Upload>
-    </form>
-    '''
+        else:
+            return jsonify({"file extention is not allowed"}),400
+    else:
+        print('in else ')
+        return '''
+        <!doctype html>
+        <title>Upload new File</title>
+        <h1>Upload new File</h1>
+        <form method=post enctype=multipart/form-data>
+        <input type=file name=file>
+        <input type=submit value=Upload>
+        </form>
+        '''
 
 
 def search_by_file():
