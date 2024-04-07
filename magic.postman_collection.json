@@ -626,7 +626,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:5000/admin/category",
+							"raw": "http://127.0.0.1:5000/admin/category?filter=7,8&pageNumber=1&pageSize=25",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -638,6 +638,20 @@
 							"path": [
 								"admin",
 								"category"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "7,8"
+								},
+								{
+									"key": "pageNumber",
+									"value": "1"
+								},
+								{
+									"key": "pageSize",
+									"value": "25"
+								}
 							]
 						}
 					},
@@ -704,7 +718,7 @@
 							]
 						},
 						"url": {
-							"raw": "http://127.0.0.1:5000/admin/category/9",
+							"raw": "http://127.0.0.1:5000/admin/category/8",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -716,7 +730,7 @@
 							"path": [
 								"admin",
 								"category",
-								"9"
+								"8"
 							]
 						}
 					},
@@ -729,7 +743,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"child 13333\",\n    \"description\": \"child desc 133333\",\n    \"parentId\": \"8\"\n}",
+							"raw": "{\n            \"description\": \"child desc 1\",\n            \"id\": 8,\n            \"parent_id\": 7,\n            \"title\": \"child 1\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -737,7 +751,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:5000/admin/category/14",
+							"raw": "http://127.0.0.1:5000/admin/category/8",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -749,7 +763,7 @@
 							"path": [
 								"admin",
 								"category",
-								"14"
+								"8"
 							]
 						}
 					},
@@ -795,7 +809,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/Users/leo/Downloads/1663443800387.jpeg"
+									"src": "/Users/leo/Downloads/IMG_6699.JPG"
 								}
 							]
 						},
