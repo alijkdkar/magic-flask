@@ -251,7 +251,8 @@ def upload_file():
             filename,extention = os.path.splitext(file.filename)
             file.filename=str(uuid.uuid4())+extention
             minio.Upload_File(file=file)
-            return jsonify({"id":file.filename})
+            fileUrl = minio.GetFileUrl(fileName=file.filename)
+            return jsonify({"id":file.filename,"url":fileUrl})
         else:
             return jsonify({"file extention is not allowed"}),400
     else:
@@ -317,12 +318,28 @@ def create_category():
         cat = Category(title=json_data.get('title'),description=json_data.get('description'))
     db.session.add(cat)
     db.session.commit()
-    return jsonify(cat.toDict())
+    return jsonify(cat.toDict()),201
 
 
 
 def  getAllCategories():
-    categories = Category.query.all()
+    list_of_ids = request.args.get('filter')
+    pageSize = request.args.get('pageSize')
+    pageNumber = request.args.get('pageNumber')
+
+
+    if pageSize is None:
+        pageSize=10
+    if pageNumber is None:
+        pageNumber = 1
+    categories = list
+    if  list_of_ids is not None:
+        list_of_ids = list_of_ids.split(',')
+        if len(list_of_ids)>0:
+            categories = Category.query.filter(Category.id.in_(list_of_ids)).paginate(max_per_page=int(pageSize),page=int(pageNumber))
+    else:
+        categories = Category.query.paginate(max_per_page=int(pageSize),page=int(pageNumber))
+
     result = []
     for cat in categories:
          result.append(cat.toDict())
@@ -334,7 +351,9 @@ def GetCategoryById(id):
      if cat is None:
         return jsonify({"error": "Not Found Exception"}),404
      else :
-        return jsonify(cat.toDict())  
+        return jsonify(cat.toDict())
+
+
 
 
 def UpdateCategory(id):
@@ -347,7 +366,7 @@ def UpdateCategory(id):
         db.session.commit()
     except Exception as ex:
         print(ex)
-    return jsonify({"Message":"The category was updated successfully"}),201
+    return jsonify(cat.toDict()),201
 
 def DeleteCategory(id):
     cat = Category.query.get(id)
@@ -358,7 +377,7 @@ def DeleteCategory(id):
     else :
           db.session.delete(cat)
           db.session.commit()
-          return  jsonify("Category Deleted")
+          return  jsonify("Category Deleted"),200
 
 
 #Todo Crud
