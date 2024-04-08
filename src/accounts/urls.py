@@ -3,6 +3,9 @@ from flask_login import login_required
 from ..app import app
 from .controllers import * #list_all_accounts_controller, create_account_controller, retrieve_account_controller, update_account_controller, delete_account_controller
 
+
+allowed_list = ['/product','/product/<product_code>','/login']
+
 @app.route("/admin/account", methods=['GET', 'POST'])
 @login_required
 def list_create_accounts():
@@ -45,6 +48,8 @@ def currentUser():
 @app.before_request
 def check_Permission():
     print('in check permission',request.url,request.method,request.cookies)
-    # request.headers.add('Access-Control-Allow-Credentials','true')
-    if '/login' not in request.url and request.method !='OPTIONS':
+    print(request.url_root,request.url_rule)
+    print(allowed_list,str(request.url_rule) in allowed_list)
+
+    if   request.method !='OPTIONS' and str(request.url_rule) not in allowed_list:
         CheckPermissionsFunc()

@@ -4,15 +4,15 @@ from ..app import app
 from .controllers import * #create_product_controller,get_one_production_by_id_controller,list_all_production_controller,upload_file,search_by_file,update_product_controller,delete_product_controller
 
 #un auth 
-@app.route("/product", methods=['GET', 'POST'])
+@app.route("/product", methods=['GET'])
 def list_productions():
     if request.method == 'GET': return list_all_production_controller()
     # if request.method == 'POST': return create_product_controller()
     else: return 'Method is Not Allowed'
 
-@app.route("/product/<product_id>", methods=['GET'])
-def retrieve_productions(product_id):
-    if request.method == 'GET': return get_one_production_by_id_controller(product_id)
+@app.route("/product/<product_code>", methods=['GET'])
+def retrieve_productions(product_code):
+    if request.method == 'GET': return get_one_production_by_code_controller(product_code)
 
 @app.route("/product/search",methods=['GET', 'POST'])
 def SearchByImage():

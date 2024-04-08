@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "autjh",
+			"name": "auth",
 			"item": [
 				{
 					"name": "Account register",
@@ -344,7 +344,7 @@
 			]
 		},
 		{
-			"name": "production",
+			"name": "admin-production",
 			"item": [
 				{
 					"name": "Feature",
@@ -618,6 +618,66 @@
 			]
 		},
 		{
+			"name": "public-production",
+			"item": [
+				{
+					"name": "get all",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/product?pageSize=200&pageNumber=1",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"product"
+							],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "200"
+								},
+								{
+									"key": "pageNumber",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Detail",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://127.0.0.1:5000/product/code1",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"product",
+								"code1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Category",
 			"item": [
 				{
@@ -626,7 +686,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "http://127.0.0.1:5000/admin/category?filter=7,8&pageNumber=1&pageSize=25",
+							"raw": "http://127.0.0.1:5000/admin/category?pageNumber=1&pageSize=25&filter={}",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -642,7 +702,8 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "7,8"
+									"value": "{\"ids\":[7,8]}",
+									"disabled": true
 								},
 								{
 									"key": "pageNumber",
@@ -651,6 +712,10 @@
 								{
 									"key": "pageSize",
 									"value": "25"
+								},
+								{
+									"key": "filter",
+									"value": "{}"
 								}
 							]
 						}
@@ -810,6 +875,72 @@
 									"key": "file",
 									"type": "file",
 									"src": "/Users/leo/Downloads/IMG_6699.JPG"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/admin/storage",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"admin",
+								"storage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "uploadFile Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/leo/Downloads/1663443800387.jpeg"
+								}
+							]
+						},
+						"url": {
+							"raw": "http://127.0.0.1:5000/admin/storage",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "5000",
+							"path": [
+								"admin",
+								"storage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "uploadFile Copy 2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/Users/leo/Downloads/1663443800387.jpeg"
 								}
 							]
 						},
