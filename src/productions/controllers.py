@@ -35,6 +35,30 @@ def list_all_production_controller():
                 response.append(data)
         return   jsonify({"count":len(response),"list":response})
 
+
+def get_one_production_by_code_controller(product_code):
+        product = Production.query.filter_by(code=product_code).first()
+        imagesUrl =[]
+        
+        for idx,x in enumerate(product.images):
+            # print(idx,minio.GetFileUrl(x.file_id))
+            j = ({"file_id":x.file_id,"url": minio.GetFileUrl(x.file_id)})
+            print("ccccc",j,"ccccc")
+            imagesUrl.append(j)
+
+        print("xxxxxx",imagesUrl)
+        data=product.toDict()
+        # data["imagesUrls"]=product.imagesUrl
+        data["images"]=imagesUrl
+        data['image']=({"file_id":product.image,"url": minio.GetFileUrl(product.image)}) #minio.GetFileUrl(product.image)
+        categoris=[]
+        for cat in product.categorys:
+            categoris.append(cat.toDict())
+        data['categories'] = categoris
+        data['features']=product.getFeaturesWithTotoalPrice()
+
+        return jsonify(data)
+
 def get_one_production_by_id_controller(prodId):
         product = Production.query.get(prodId)
         imagesUrl =[]
@@ -236,6 +260,8 @@ def DeleteOneFeatureFromTheList(product_id,feature_id):
 def upload_file():
     if request.method == 'POST':
         # check if the post request has the file part
+        print('files:',request.files)
+
         if 'file' not in request.files:
             return jsonify({"No File Uploaded"})
         file = request.files['file']
@@ -326,17 +352,20 @@ def  getAllCategories():
     list_of_ids = request.args.get('filter')
     pageSize = request.args.get('pageSize')
     pageNumber = request.args.get('pageNumber')
-
+    print(list_of_ids)
 
     if pageSize is None:
         pageSize=10
     if pageNumber is None:
         pageNumber = 1
     categories = list
+    list_of_ids = json.loads(list_of_ids)
     if  list_of_ids is not None:
-        list_of_ids = list_of_ids.split(',')
-        if len(list_of_ids)>0:
-            categories = Category.query.filter(Category.id.in_(list_of_ids)).paginate(max_per_page=int(pageSize),page=int(pageNumber))
+        list_of_ids =list_of_ids.get('ids')
+        # print(type(list_of_ids))
+        # list_of_ids = list_of_ids.split(',')
+    if type(list_of_ids)==list and len(list_of_ids)>0:
+        categories = Category.query.filter(Category.id.in_(list_of_ids)).paginate(max_per_page=int(pageSize),page=int(pageNumber))
     else:
         categories = Category.query.paginate(max_per_page=int(pageSize),page=int(pageNumber))
 
@@ -383,3 +412,4 @@ def DeleteCategory(id):
 #Todo Crud
 ######### end Category #########
 
+##{"ids":[[{"description":"Root desc","id":7,"parent_id":null,"title":"Root"},{"description":"child desc 1","id":8,"parent_id":7,"title":"child 1"}]]}
