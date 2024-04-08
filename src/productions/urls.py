@@ -5,17 +5,15 @@ from .controllers import * #create_product_controller,get_one_production_by_id_c
 from flask_login import login_required, current_user
 
 #un auth 
-@app.route("/product", methods=['GET', 'POST'])
-@login_required
-# @admin_required
+@app.route("/product", methods=['GET'])
 def list_productions():
     if request.method == 'GET': return list_all_production_controller()
     # if request.method == 'POST': return create_product_controller()
     else: return 'Method is Not Allowed'
 
-@app.route("/product/<product_id>", methods=['GET'])
-def retrieve_productions(product_id):
-    if request.method == 'GET': return get_one_production_by_id_controller(product_id)
+@app.route("/product/<product_code>", methods=['GET'])
+def retrieve_productions(product_code):
+    if request.method == 'GET': return get_one_production_by_code_controller(product_code)
 
 @app.route("/product/search",methods=['GET', 'POST'])
 def SearchByImage():
