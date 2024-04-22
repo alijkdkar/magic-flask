@@ -14,25 +14,33 @@ class MilvuesClient():
         # Check if collection exists, create if it doesn't
         def create_collection_if_not_exists(self,collection_name):
                 print('create_collection_if_not_exists => connect:',self.milvus_connection)
-                if collection_name not in utility.list_collections():
-                        
-                        vectorid = FieldSchema(name="vectorId",dtype=DataType.VARCHAR,max_length=64,is_primary=True,)
-                        product_id =FieldSchema(name="productId", dtype=DataType.VARCHAR,max_length=64) 
-                        image_id =FieldSchema(name="imageId", dtype=DataType.VARCHAR,max_length=64)
-                        field_schema = FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=128)
-                        schema = CollectionSchema(fields=[vectorid,product_id,image_id,field_schema], description="Collection for storing image features")
+                if collection_name in utility.list_collections():
+                        print(f"Collection '{collection_name}' already exists.")
+                        self.drop_collection(collection_name)
+
+                vectorid = FieldSchema(name="vectorId",dtype=DataType.VARCHAR,max_length=64,is_primary=True,)
+                product_id =FieldSchema(name="productId", dtype=DataType.VARCHAR,max_length=64) 
+                image_id =FieldSchema(name="imageId", dtype=DataType.VARCHAR,max_length=64)
+                field_schema = FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=128)
+                schema = CollectionSchema(fields=[vectorid,product_id,image_id,field_schema], description="Collection for storing image features")
                         
                         # self.milvus_connection.create_collection(collection_name, schema)
-                        collection = Collection(
+                collection = Collection(
                         name=collection_name,
                         schema=schema,
                         using='default',
                         shards_num=2
                         )
                         # collection.cre
-                        print(f"Collection '{collection_name}' created successfully.")
-                else:
-                        print(f"Collection '{collection_name}' already exists.")
+                print(f"Collection '{collection_name}' created successfully.")
+                
+
+        def drop_collection(self, collection_name):
+                print(f"Dropping collection '{collection_name}'")
+                collection = Collection(collection_name)
+                collection.drop()
+                print(f"Collection '{collection_name}' dropped successfully.")
+
 
         def connect(self) -> 'MilvuesClient':
                 print('in connect :',os.getenv('milvusHost'))
@@ -50,18 +58,21 @@ class MilvuesClient():
         def insert_vectors(self,imgId,vectors):
                 # status, ids = self.milvus_connection.insert(collection_name=os.getenv('milvusBucketName'), records=vectors)
                 collection = Collection(os.getenv('milvusBucketName'))      # Get an existing collection.
+
+                print('feature size :',vectors.shape)
                 data = [{
-                "vectorId": 1,
-                "productId": 0,
+                "vectorId": '2',
+                "productId": '0',
                 "imageId": imgId,
-                "vector":[vectors]
+                "vector":vectors[:128] #todo : must to make 128 dim for feature in feature extraction 
                 }]
                 print(data)
                 #load data into a DataFrame object:
                 df = pa.DataFrame(data)
 
                 mr = collection.insert(df)
-                if mr.OK():
+                print(mr)
+                if mr.succ_count>0:
                         print("Vectors inserted successfully!")
                         return mr.primary_keys
                 else:

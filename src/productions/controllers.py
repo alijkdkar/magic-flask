@@ -276,7 +276,7 @@ def upload_file():
             file.filename=str(uuid.uuid4())+extention
             minio.Upload_File(file=file)
             feature = CoreImageAnalyzer().FeattureExtraction(file=file)
-            print(feature)
+            print('feature:>>>>>',feature)
             ids = milvus.insert_vectors(file.filename,feature)
             print('milvus:',ids)
             fileUrl = minio.GetFileUrl(fileName=file.filename)
