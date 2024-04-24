@@ -25,10 +25,11 @@ def list_all_production_controller():
         response = []
         for pro in allProduction:
                 data =pro.toDict()
-                data["image"]=minio.GetFileUrl(pro.image)
+                if pro.image is not None:    
+                    data["image"]=minio.GetFileUrl(pro.image)
 
                 categoris=[]
-                for cat in pro.categorys:
+                for cat in pro.categories:
                     categoris.append(cat.toDict())
                 data['categories'] = categoris
                 data['features']=pro.getFeaturesWithTotoalPrice()
@@ -52,7 +53,7 @@ def get_one_production_by_code_controller(product_code):
         data["images"]=imagesUrl
         data['image']=({"file_id":product.image,"url": minio.GetFileUrl(product.image)}) #minio.GetFileUrl(product.image)
         categoris=[]
-        for cat in product.categorys:
+        for cat in product.categories:
             categoris.append(cat.toDict())
         data['categories'] = categoris
         data['features']=product.getFeaturesWithTotoalPrice()
@@ -62,34 +63,29 @@ def get_one_production_by_code_controller(product_code):
 def get_one_production_by_id_controller(prodId):
         product = Production.query.get(prodId)
         imagesUrl =[]
-        
-        for idx,x in enumerate(product.images):
-            # print(idx,minio.GetFileUrl(x.file_id))
-            j = ({"file_id":x.file_id,"url": minio.GetFileUrl(x.file_id)})
-            print("ccccc",j,"ccccc")
-            imagesUrl.append(j)
+        if product.images is not None:
+            for idx,x in enumerate(product.images):
+                j = ({"file_id":x.file_id,"url": minio.GetFileUrl(x.file_id)})
+                imagesUrl.append(j)
 
-        print("xxxxxx",imagesUrl)
         data=product.toDict()
-        # data["imagesUrls"]=product.imagesUrl
         data["images"]=imagesUrl
-        data['image']=({"file_id":product.image,"url": minio.GetFileUrl(product.image)}) #minio.GetFileUrl(product.image)
+        if product.image is not None:    
+            data['image']=({"file_id":product.image,"url": minio.GetFileUrl(product.image)})
         categoris=[]
-        for cat in product.categorys:
-            categoris.append(cat.toDict())
+        for cat in product.categories:
+            categoris.append(cat.id)
         data['categories'] = categoris
         data['features']=product.getFeaturesWithTotoalPrice()
 
         return jsonify(data)
 
 def create_product_controller():
-    # request_form = request.form.to_dict()
     request_form1 = request.data.decode('utf-8')
     id = str(uuid.uuid4())
-    print(id)
+    
     json_data = json.loads(request_form1)
-
-    if json_data.get('code') is not None and CheckCodeUsed(json_data['code']):
+    if json_data.get('code') is not None and CheckCodeUsed(json_data.get('code'))==True:
         return  jsonify({"status":"bad request","msg":"duplicat code"}),400
 
 
@@ -104,19 +100,22 @@ def create_product_controller():
                           code = json_data.get('code'),
                           color = json_data.get('color'),
                           stock  = json_data.get('stock'),
+                          enable = json_data.get('enable'),
+                          viewOnly = json_data.get('viewOnly'),
                           )
     imagesId = json_data.get('images')
     print("images :",imagesId,new_production.id)
-    for x in imagesId:
-        newImageId = str(uuid.uuid4())
-        newProductImage= ProductionImage(
+    if imagesId is not None:
+        for x in imagesId:
+            newImageId = str(uuid.uuid4())
+            newProductImage= ProductionImage(
               id = newImageId,
               file_id = x,
               product_id=new_production.id,
               image_path= '',
               type = 'Image'
-        )
-        db.session.add(newProductImage)
+            )
+            db.session.add(newProductImage)
     
     AddProductFeatures(id)
 
@@ -127,7 +126,7 @@ def create_product_controller():
     print(categorisIds)
     for catId in categorisIds:
         cat =Category.query.get(catId)
-        new_production.categorys.append(cat)
+        new_production.categories.append(cat)
     db.session.commit()
 
 
@@ -140,6 +139,13 @@ def update_product_controller(product_id):
     vv= json.loads(request.data.decode("utf-8"))
     # productDb.setValuesFromDict(request.form)
     productDb.setValuesFromJson(vv)
+    feature = GetAllFeatureOfThisProduct(product_id)
+    if len(feature)==0:
+        print("in add new feature")
+        AddProductFeatures(product_id)
+    else:
+        print("in uopdate exist features")
+        UpdateProductFeatureById(product_id)
     db.session.commit()
     return jsonify({"Message":"Success"}),201
 
@@ -165,34 +171,35 @@ def AddProductFeatures(product_id):
     # product = Production.query.get(product_id)
     # if product is None:
     #     abort(404)
+
     try:
-        print(request_form)
         json_data = json.loads(request_form)
-        print("after")
         # Access the 'Features' array
-        features = json_data.get('Features')
+        features = json_data.get('features')
         print("its feature:",features)
         # Process each feature
-        for feature in features:
-            feature_name = feature.get('name')
-            feature_description = feature.get('description')
-            feature_type = feature.get('feature_type')
-            feature_value = feature.get('value')
-            is_price_effect = feature.get('is_price_effect')
-            price_effect_value = feature.get('price_effect_value')
-            enable = feature.get('enable')
-            new_feature=ProductionFeatures(id=str(uuid.uuid4()),
-                           product_id = product_id,
-                           name = feature_name,
-                           description = feature_description,
-                           feature_type = str(feature_type), #ProductFeatureType(feature_type),
-                           value = feature_value,
-                           is_price_effect = bool(is_price_effect),
-                           enable = bool(enable),
-                           price_effect_value = price_effect_value
-                           )
-            db.session.add(new_feature)
-        # db.session.commit()
+        if features is not None:
+        
+            for feature in features:
+                feature_name = feature.get('title')
+                feature_description = feature.get('description')
+                feature_type = feature.get('featureType')
+                feature_value = feature.get('value')
+                is_price_effect = bool(feature.get('isEffectPrice'))
+                price_effect_value = feature.get('priceEffectValue')
+                enable = feature.get('active')
+                new_feature=ProductionFeatures(id=str(uuid.uuid4()),
+                            product_id = product_id,
+                            name = feature_name,
+                            description = feature_description,
+                            feature_type = str(feature_type), #ProductFeatureType(feature_type),
+                            value = feature_value or 'someValue',
+                            is_price_effect = bool(is_price_effect),
+                            enable = bool(enable),
+                            price_effect_value = price_effect_value
+                            )
+                db.session.add(new_feature)
+            # db.session.commit()
 
                 
     except json.JSONDecodeError as ex :
@@ -211,7 +218,7 @@ def GetAllFeatureOfThisProduct(product_id):
     response = []
     for x in features:
         response.append(x.toDict())
-    return jsonify({"count":len(response),"list":response})
+    return features  #jsonify({"count":len(response),"list":response})
 
 def UpdateProductFeatureById(product_id):
     product =Production.query.get(product_id)
@@ -222,18 +229,18 @@ def UpdateProductFeatureById(product_id):
         print(request_form)
         json_data = json.loads(request_form)
         # Access the 'Features' array
-        features = json_data.get('Features')
+        features = json_data.get('features')
 
         # Process each feature
         for feature in features:
             feature_id = feature.get('id')
-            feature_name = feature.get('name')
+            feature_name = feature.get('title')
             feature_description = feature.get('description')
-            feature_type = feature.get('feature_type')
+            feature_type = feature.get('featureType')
             feature_value = feature.get('value')
-            is_price_effect = bool(feature.get('is_price_effect'))
-            price_effect_value = feature.get('price_effect_value')
-            enable = bool(feature.get('enable'))
+            is_price_effect = bool(feature.get('isEffectPrice'))
+            price_effect_value = feature.get('priceEffectValue')
+            enable = bool(feature.get('active'))
             featureDb =ProductionFeatures.query.get(feature_id)
             if featureDb is not None:
                 featureDb.setValues(name=feature_name,description=feature_description,type=feature_type,value=feature_value,is_price_effect=is_price_effect,price_effect_value=price_effect_value,enable=enable)
@@ -328,7 +335,7 @@ def allowed_file(fileName:str):
 def CheckCodeUsed(code):
         print(code)
         p=Production.query.filter_by(code=code).first()
-        print("pppp",p is None)
+        print("pppp",p is not None)
         return jsonify( p is not None)
 
 
