@@ -6,6 +6,7 @@ from .. import db
 from ..utils.ImageProccessor import CoreImageAnalyzer
 from .models import Production,ProductionImage,Category,Tag,ProductionFeatures
 from sqlalchemy import inspect
+from sqlalchemy.sql import text
 
 
 allowed_extention = ['jpg','jpeg','png',]
@@ -20,8 +21,12 @@ def list_all_production_controller():
         
         if pageNumber is None:
             pageNumber = 1
-
-        allProduction =  Production.query.paginate(max_per_page=int(pageSize),page=int(pageNumber))
+        sort=''
+        if 'sort' in request.args:
+            sor =  request.args.get("sort")
+            sor = json.loads(str(sor))
+            sort = '"production"."'+sor[0]+'"'+" "+sor[1]
+        allProduction =  Production.query.order_by(text(sort)).paginate(max_per_page=int(pageSize),page=int(pageNumber))
         response = []
         for pro in allProduction:
                 data =pro.toDict()
@@ -139,13 +144,18 @@ def update_product_controller(product_id):
     vv= json.loads(request.data.decode("utf-8"))
     # productDb.setValuesFromDict(request.form)
     productDb.setValuesFromJson(vv)
-    feature = GetAllFeatureOfThisProduct(product_id)
-    if len(feature)==0:
-        print("in add new feature")
-        AddProductFeatures(product_id)
-    else:
-        print("in uopdate exist features")
-        UpdateProductFeatureById(product_id)
+
+   
+    features = ProductionFeatures.query.filter_by(product_id=str(product_id)).all()
+    for x in features:
+        db.session.delete(x)
+    
+    AddProductFeatures(product_id)
+    # if len(feature)==0:
+    #     print("in add new feature")
+    # else:
+    #     print("in uopdate exist features")
+    #     UpdateProductFeatureById(product_id)
 
 
     for img in productDb.images:
@@ -273,8 +283,7 @@ def UpdateProductFeatureById(product_id):
         abort(500)
     return jsonify("Feature updated successfully"),200
 
-def DeleteOneFeatureFromTheList(product_id,feature_id):
-    pass
+
 
 
 
@@ -363,9 +372,9 @@ def create_category():
     # print(json_data.get('parentId'))
     
     if  json_data.get('parentId') is not None:
-        cat = Category(title=json_data.get('title'),description=json_data.get('description'),parent_id=json_data.get('parentId'))
+        cat = Category(title=json_data.get('title'),description=json_data.get('description'),parent_id=json_data.get('parentId'),enName=json_data.get('enName'))
     else:
-        cat = Category(title=json_data.get('title'),description=json_data.get('description'))
+        cat = Category(title=json_data.get('title'),description=json_data.get('description'),enName=json_data.get('enName'))
     db.session.add(cat)
     db.session.commit()
     return jsonify(cat.toDict()),201

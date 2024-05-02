@@ -44,7 +44,6 @@ def add_feature(product_id):
     if request.method == "POST": return AddProductFeatures(product_id)
     elif request.method == "GET": return    GetAllFeatureOfThisProduct(product_id)
     elif request.method == "PUT": return    UpdateProductFeatureById(product_id)
-    elif request.method == "Delete": return DeleteOneFeatureFromTheList(product_id)
     else: return 'Method is Not Allowed'
 
 @app.route("/admin/product/check_code/<code>", methods = ["GET"])

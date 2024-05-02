@@ -20,6 +20,7 @@ class Category(db.Model):
         id = db.Column(db.Integer, primary_key=True, nullable=False, unique=True)
         title = db.Column(db.String(100))
         description = db.Column(db.String(200))
+        enName = db.Column(db.String(100))
         parent_id = db.Column(Integer, ForeignKey('category.id'),nullable=True, unique=False)
 
         def toDict(self):
@@ -33,6 +34,7 @@ class Category(db.Model):
         def setValuesFromJson(self, data) -> None:
                 self.title = data.get('title')
                 self.description = data.get('description')
+                self.enName = data.get('enName')
                 if data.get('parentId') is not None:
                         self.parent_id = data.get('parentId')
 
