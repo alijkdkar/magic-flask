@@ -96,7 +96,7 @@ def create_product_controller():
                           image = json_data.get('image'),
                           price = json_data.get('price'),
                           unit = json_data.get('unit'),
-                          material = json_data.get('materil'),
+                          material = json_data.get('material'),
                           code = json_data.get('code'),
                           color = json_data.get('color'),
                           stock  = json_data.get('stock'),
@@ -146,6 +146,23 @@ def update_product_controller(product_id):
     else:
         print("in uopdate exist features")
         UpdateProductFeatureById(product_id)
+
+
+    for img in productDb.images:
+        db.session.delete(img)
+    imagesId = vv.get('images')
+    if imagesId is not None:
+        for x in imagesId:
+            newImageId = str(uuid.uuid4())
+            newProductImage= ProductionImage(
+              id = newImageId,
+              file_id = x,
+              product_id=productDb.id,
+              image_path= '',
+              type = 'Image'
+            )
+            db.session.add(newProductImage)
+    
     db.session.commit()
     return jsonify({"Message":"Success"}),201
 

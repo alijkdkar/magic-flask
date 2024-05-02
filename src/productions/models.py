@@ -108,15 +108,16 @@ class Production(db.Model):
                 self.updatedTime = data_dict.get('updatedTime', self.updatedTime)
                 
                 # # Update many-to-many relationships
-                # if 'tags' in data_dict:
-                #         self.tags = [Tag.query.get(tag_id) for tag_id in data_dict['tags']]
-                # if 'categories' in data_dict:
-                #         self.categories = [Category.query.get(cat_id) for cat_id in data_dict['categories']]
+                if 'tags' in data_dict:
+                        self.tags = [Tag.query.get(tag_id) for tag_id in data_dict['tags']]
+
+                if 'categories' in data_dict:
+                        self.categories = [Category.query.get(cat_id) for cat_id in data_dict['categories']]
                 
                 # # Update one-to-many relationships
                 # # Assuming 'images' and 'features' are lists of dictionaries in the JSON
-                # # if 'images' in data_dict:
-                # #         self.images = [ProductionImage(**image_data) for image_data in data_dict['images']]
+                # if 'images' in data_dict:
+                #         self.images = [ProductionImage(**image_data) for image_data in data_dict['images']]
                 # if 'features' in data_dict:
                 #         # self.features = [ProductionFeatures(**feature_data) for feature_data in data_dict['features']]
                 #         self.features.setValuesFromJson()
