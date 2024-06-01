@@ -1,7 +1,7 @@
 from flask import request
 
 from ..app import app
-from .controllers import * #create_product_controller,get_one_production_by_id_controller,list_all_production_controller,upload_file,search_by_file,update_product_controller,delete_product_controller
+from .controllers import *
 
 #un auth 
 @app.route("/product", methods=['GET'])

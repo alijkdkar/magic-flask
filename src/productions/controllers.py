@@ -48,15 +48,15 @@ def get_one_production_by_code_controller(product_code):
         
         for idx,x in enumerate(product.images):
             # print(idx,minio.GetFileUrl(x.file_id))
-            j = ({"file_id":x.file_id,"url": minio.GetFileUrl(x.file_id)})
-            print("ccccc",j,"ccccc")
-            imagesUrl.append(j)
+            
+            
+            imagesUrl.append(minio.GetFileUrl(x.file_id))
 
         print("xxxxxx",imagesUrl)
         data=product.toDict()
         # data["imagesUrls"]=product.imagesUrl
         data["images"]=imagesUrl
-        data['image']=({"file_id":product.image,"url": minio.GetFileUrl(product.image)}) #minio.GetFileUrl(product.image)
+        data['image']= minio.GetFileUrl(product.image) #minio.GetFileUrl(product.image)
         categoris=[]
         for cat in product.categories:
             categoris.append(cat.toDict())
