@@ -7,7 +7,6 @@ from .controllers import *
 @app.route("/product", methods=['GET'])
 def list_productions():
     if request.method == 'GET': return list_all_production_controller()
-    # if request.method == 'POST': return create_product_controller()
     else: return 'Method is Not Allowed'
 
 @app.route("/product/<product_code>", methods=['GET'])

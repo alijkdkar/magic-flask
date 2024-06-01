@@ -129,10 +129,8 @@ class Production(db.Model):
         
         def getFeaturesWithTotoalPrice(self):
                 featuresResult = []
-                print("Load Feature",self.features)
+                
                 for feature in self.features:
-                        # featuresResult.append({"id":feature.id,"title":feature.name,"value":feature.value,"priceEffectValue":feature.price_effect_value,"isEffectPrice":feature.is_price_effect,"totalPrice":totalPrice})
-                        print("ffffff",feature.is_price_effect)
                         featuresResult.append({"id":feature.id,"title":feature.name,"active":feature.enable,"description":feature.description,"value":feature.value,"priceEffectValue":feature.price_effect_value,"isEffectPrice":feature.is_price_effect,"featureType":feature.feature_type})
                 return featuresResult
 

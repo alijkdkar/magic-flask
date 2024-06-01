@@ -46,17 +46,13 @@ def get_one_production_by_code_controller(product_code):
         product = Production.query.filter_by(code=product_code).first()
         imagesUrl =[]
         
-        for idx,x in enumerate(product.images):
-            # print(idx,minio.GetFileUrl(x.file_id))
-            
-            
-            imagesUrl.append(minio.GetFileUrl(x.file_id))
+        for _,img in enumerate(product.images):
+            imagesUrl.append(minio.GetFileUrl(img.file_id))
 
         print("xxxxxx",imagesUrl)
         data=product.toDict()
-        # data["imagesUrls"]=product.imagesUrl
         data["images"]=imagesUrl
-        data['image']= minio.GetFileUrl(product.image) #minio.GetFileUrl(product.image)
+        data['image']= minio.GetFileUrl(product.image)
         categoris=[]
         for cat in product.categories:
             categoris.append(cat.toDict())
@@ -141,26 +137,19 @@ def create_product_controller():
 
 def update_product_controller(product_id):
     productDb = Production.query.get(product_id)
-    vv= json.loads(request.data.decode("utf-8"))
-    # productDb.setValuesFromDict(request.form)
-    productDb.setValuesFromJson(vv)
+    requestPayload= json.loads(request.data.decode("utf-8"))
+    productDb.setValuesFromJson(requestPayload)
 
    
     features = ProductionFeatures.query.filter_by(product_id=str(product_id)).all()
     for x in features:
         db.session.delete(x)
-    
-    AddProductFeatures(product_id)
-    # if len(feature)==0:
-    #     print("in add new feature")
-    # else:
-    #     print("in uopdate exist features")
-    #     UpdateProductFeatureById(product_id)
 
+    AddProductFeatures(product_id)
 
     for img in productDb.images:
         db.session.delete(img)
-    imagesId = vv.get('images')
+    imagesId = requestPayload.get('images')
     if imagesId is not None:
         for x in imagesId:
             newImageId = str(uuid.uuid4())
@@ -183,8 +172,6 @@ def delete_product_controller(product_id):
     
     print(product.images)
     for img in product.images:
-        # imgId = uuid.UUID(img.id)
-        # pimage =ProductionImage.query.filter_by(id=imgId).first()
         db.session.delete(img)
     
     db.session.delete(product)
@@ -226,11 +213,9 @@ def AddProductFeatures(product_id):
                             price_effect_value = price_effect_value
                             )
                 db.session.add(new_feature)
-            # db.session.commit()
 
                 
     except json.JSONDecodeError as ex :
-    # except Exception as  ex :
         print("Data is not in JSON format",ex.msg)
         abort(500)
     return jsonify("Feature added successfully"),201
@@ -245,7 +230,7 @@ def GetAllFeatureOfThisProduct(product_id):
     response = []
     for x in features:
         response.append(x.toDict())
-    return features  #jsonify({"count":len(response),"list":response})
+    return features
 
 def UpdateProductFeatureById(product_id):
     product =Production.query.get(product_id)
@@ -278,7 +263,6 @@ def UpdateProductFeatureById(product_id):
 
                 
     except json.JSONDecodeError as ex :
-    # except Exception as  ex :
         print("Data is not in JSON format",ex.msg)
         abort(500)
     return jsonify("Feature updated successfully"),200
@@ -395,8 +379,6 @@ def  getAllCategories():
     list_of_ids = json.loads(list_of_ids)
     if  list_of_ids is not None:
         list_of_ids =list_of_ids.get('ids')
-        # print(type(list_of_ids))
-        # list_of_ids = list_of_ids.split(',')
     if type(list_of_ids)==list and len(list_of_ids)>0:
         categories = Category.query.filter(Category.id.in_(list_of_ids)).paginate(max_per_page=int(pageSize),page=int(pageNumber))
     else:
@@ -444,5 +426,3 @@ def DeleteCategory(id):
 
 #Todo Crud
 ######### end Category #########
-
-##{"ids":[[{"description":"Root desc","id":7,"parent_id":null,"title":"Root"},{"description":"child desc 1","id":8,"parent_id":7,"title":"child 1"}]]}
