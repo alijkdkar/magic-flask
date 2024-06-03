@@ -19,6 +19,13 @@ def SearchByImage():
     if request.method in ['GET','POST']:return search_by_file()
     else: return 'Method is Not Allowed'
 
+@app.route('/category',methods=['GET'])
+def GetCategory():
+    if request.method == 'GET':
+        return getAllCategories()
+    else:
+        return 'Method is Not Allowed'
+    
 # admin Auth API
 
 

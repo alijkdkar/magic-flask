@@ -5,8 +5,8 @@ from .. import minio
 from .. import db
 from ..utils.ImageProccessor import CoreImageAnalyzer
 from .models import Production,ProductionImage,Category,Tag,ProductionFeatures
-from sqlalchemy import inspect
 from sqlalchemy.sql import text
+
 
 
 allowed_extention = ['jpg','jpeg','png',]
@@ -16,6 +16,7 @@ allowed_extention = ['jpg','jpeg','png',]
 def list_all_production_controller():
         pageSize = request.args.get('pageSize')
         pageNumber = request.args.get('pageNumber')
+        categoriesFilter = request.args.get('categories')
         if pageSize is None:
             pageSize=10
         
@@ -26,7 +27,19 @@ def list_all_production_controller():
             sor =  request.args.get("sort")
             sor = json.loads(str(sor))
             sort = '"production"."'+sor[0]+'"'+" "+sor[1]
-        allProduction =  Production.query.order_by(text(sort)).paginate(max_per_page=int(pageSize),page=int(pageNumber))
+        
+        if categoriesFilter is not None and categoriesFilter.strip() != '':
+            categoriesFilter = categoriesFilter.split(',')
+            allProduction =  (Production.query
+                                            .join(Production.categories)
+                                            .filter(Production.categories.any(Category.id.in_(categoriesFilter)))
+                                            .order_by(text(sort)).paginate(max_per_page=int(pageSize),page=int(pageNumber)))
+
+        else:
+            allProduction =  Production.query.order_by(text(sort)).paginate(max_per_page=int(pageSize),page=int(pageNumber))
+        
+        
+        
         response = []
         for pro in allProduction:
                 data =pro.toDict()
@@ -49,7 +62,6 @@ def get_one_production_by_code_controller(product_code):
         for _,img in enumerate(product.images):
             imagesUrl.append(minio.GetFileUrl(img.file_id))
 
-        print("xxxxxx",imagesUrl)
         data=product.toDict()
         data["images"]=imagesUrl
         data['image']= minio.GetFileUrl(product.image)
@@ -369,7 +381,6 @@ def  getAllCategories():
     list_of_ids = request.args.get('filter')
     pageSize = request.args.get('pageSize')
     pageNumber = request.args.get('pageNumber')
-    print(list_of_ids)
 
     if pageSize is None:
         pageSize=10
