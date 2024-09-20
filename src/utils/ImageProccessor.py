@@ -6,6 +6,11 @@ from skimage.filters import gabor
 from skimage import color, data, filters, io
 import numpy as np
 import os.path
+# from sklearn.decomposition import PCA
+# from tensorflow.keras.applications import VGG16
+# from tensorflow.keras.preprocessing import image
+# from tensorflow.keras.applications.vgg16 import preprocess_input
+
 
 
 
@@ -37,5 +42,25 @@ class CoreImageAnalyzer:
                 # Reshape the feature matrices to 1D arrays
                 features = features.flatten()
                 # features2 = features2.flatten()
+
+
+                # pca = PCA(n_components=128)
+                # features_128 = pca.fit_transform(features.reshape(1, -1))
+
+                # # Convert the reduced feature vector back to a 1D array
+                # features_128 = features_128.flatten()
                 return features
 
+
+
+        # Define a function to extract features from an image using VGG16 model
+        # def extract_features(image_path):
+        #         model = VGG16(weights='imagenet', include_top=False)
+        #         img = image.load_img(image_path, target_size=(224, 224))
+        #         img_data = image.img_to_array(img)
+        #         img_data = np.expand_dims(img_data, axis=0)
+        #         img_data = preprocess_input(img_data)
+        #         features = model.predict(img_data)
+        #         flattened_features = features.flatten()
+        #         normalized_features = flattened_features / np.linalg.norm(flattened_features)
+        #         return normalized_features

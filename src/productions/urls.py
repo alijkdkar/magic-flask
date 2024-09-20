@@ -66,6 +66,16 @@ def UploadFile():
     if request.method in ['GET','POST']:return upload_file()
 
 
+@app.route("/product/search",methods=['GET', 'POST'])
+def SearchByImage():
+    print(request.method)
+    if request.method in ['GET','POST']:return search_by_file()
+    else: return 'Method is Not Allowed'
+
+@app.route("/product/search/all",methods=['GET'])
+def GetAllIndexApi():
+    return GetAllIndex()
+
 @app.route("/admin/category",methods=['GET','POST'])
 def list_create_category():
     if request.method == 'GET': return getAllCategories()

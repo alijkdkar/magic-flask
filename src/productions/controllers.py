@@ -4,14 +4,18 @@ from werkzeug.utils import secure_filename
 from .. import minio
 from .. import db
 from ..utils.ImageProccessor import CoreImageAnalyzer
+from ..utils.milvus import MyMilvuesClient
+from ..utils.milvus import MyMilvuesClient
+
 from .models import Production,ProductionImage,Category,Tag,ProductionFeatures
 from sqlalchemy.sql import text
 
 
 
 allowed_extention = ['jpg','jpeg','png',]
+milvus=MyMilvuesClient().connect()
 
-# production
+#### production #####
 
 def list_all_production_controller():
         pageSize = request.args.get('pageSize')
@@ -146,7 +150,6 @@ def create_product_controller():
     response = Production.query.get(id).toDict()
     return jsonify(response)
 
-
 def update_product_controller(product_id):
     productDb = Production.query.get(product_id)
     requestPayload= json.loads(request.data.decode("utf-8"))
@@ -190,8 +193,6 @@ def delete_product_controller(product_id):
     db.session.commit()
     return  jsonify("Product Deleted")
 
-
-
 def AddProductFeatures(product_id):
     request_form = request.data.decode('utf-8')
     # product = Production.query.get(product_id)
@@ -231,8 +232,6 @@ def AddProductFeatures(product_id):
         print("Data is not in JSON format",ex.msg)
         abort(500)
     return jsonify("Feature added successfully"),201
-
-
 
 def GetAllFeatureOfThisProduct(product_id):
     product =Production.query.get(product_id)
@@ -279,7 +278,8 @@ def UpdateProductFeatureById(product_id):
         abort(500)
     return jsonify("Feature updated successfully"),200
 
-
+def DeleteOneFeatureFromTheList(product_id,feature_id):
+    pass
 
 
 
@@ -306,22 +306,24 @@ def upload_file():
             filename,extention = os.path.splitext(file.filename)
             file.filename=str(uuid.uuid4())+extention
             minio.Upload_File(file=file)
+            feature = CoreImageAnalyzer().FeattureExtraction(file=file)
+            ids = milvus.insert_vectors(file.filename,feature)
+            print('milvus:',ids)
             fileUrl = minio.GetFileUrl(fileName=file.filename)
             return jsonify({"id":file.filename,"url":fileUrl})
         else:
             return jsonify({"file extention is not allowed"}),400
     else:
         print('in else ')
-        return '''
-        <!doctype html>
-        <title>Upload new File</title>
-        <h1>Upload new File</h1>
-        <form method=post enctype=multipart/form-data>
-        <input type=file name=file>
-        <input type=submit value=Upload>
-        </form>
-        '''
-
+    return '''
+    <!doctype html>
+    <title>Upload new File</title>
+    <h1>Upload new File</h1>
+    <form method=post enctype=multipart/form-data>
+      <input type=file name=file>
+      <input type=submit value=Upload>
+    </form>
+    '''
 
 def search_by_file():
     if request.method == 'POST':
@@ -335,6 +337,8 @@ def search_by_file():
             return jsonify({"Bad Request"})
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
+            feature = CoreImageAnalyzer().FeattureExtraction(file=file)
+            milvus.search_similar_vectors(feature)
             # upload to minio and return id 
             return list_all_production_controller()
             
@@ -348,6 +352,16 @@ def search_by_file():
     </form>
     '''
 
+def GetAllIndex():
+    ss=milvus.GetAllIndexed()
+    print("asdasdasd")
+    if ss is None:
+        print("nothing found")
+    else:
+        print(ss)
+    
+    return jsonify({"message": "done"}),200
+
 def allowed_file(fileName:str):
      """Checks if the file is one of the allowed types/extensions."""
      if fileName.split('.')[1] in allowed_extention:
@@ -355,9 +369,7 @@ def allowed_file(fileName:str):
      return False
 
 def CheckCodeUsed(code):
-        print(code)
         p=Production.query.filter_by(code=code).first()
-        print("pppp",p is not None)
         return jsonify( p is not None)
 
 
@@ -373,7 +385,7 @@ def create_category():
         cat = Category(title=json_data.get('title'),description=json_data.get('description'),enName=json_data.get('enName'))
     db.session.add(cat)
     db.session.commit()
-    return jsonify(cat.toDict()),201
+    return jsonify(cat.toDict())
 
 
 
@@ -432,7 +444,7 @@ def DeleteCategory(id):
     else :
           db.session.delete(cat)
           db.session.commit()
-          return  jsonify("Category Deleted"),200
+          return  jsonify("Category Deleted")
 
 
 #Todo Crud

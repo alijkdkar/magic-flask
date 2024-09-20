@@ -4,9 +4,10 @@ from ..app import app
 from .controllers import * #list_all_accounts_controller, create_account_controller, retrieve_account_controller, update_account_controller, delete_account_controller
 
 
-allowed_list = ['/product','/product/<product_code>','/login','/register']
+allowed_list = ['/product','/product/<product_code>','/login','/admin/storage','/product/search/all','/product/search']
 
 @app.route("/admin/account", methods=['GET', 'POST'])
+@login_required
 def list_create_accounts():
     if request.method == 'GET': return list_all_accounts_controller()
     if request.method == 'POST': return create_account_controller_admin()
