@@ -4,16 +4,15 @@ from werkzeug.utils import secure_filename
 from .. import minio
 from .. import db
 from ..utils.ImageProccessor import CoreImageAnalyzer
-from ..utils.milvus import MilvuesClient
-
-from ..utils.milvus import MilvuesClient
+from ..utils.milvus import MyMilvuesClient
+from ..utils.milvus import MyMilvuesClient
 
 from .models import Production,ProductionImage,Category,Tag,ProductionFeatures
 from sqlalchemy import inspect
 
 
 allowed_extention = ['jpg','jpeg','png',]
-milvus=MilvuesClient().connect()
+milvus=MyMilvuesClient().connect()
 
 #### production #####
 
@@ -307,6 +306,8 @@ def search_by_file():
             return jsonify({"Bad Request"})
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
+            feature = CoreImageAnalyzer().FeattureExtraction(file=file)
+            milvus.search_similar_vectors(feature)
             # upload to minio and return id 
             return list_all_production_controller()
             
@@ -319,6 +320,16 @@ def search_by_file():
       <input type=submit value=Upload>
     </form>
     '''
+
+def GetAllIndex():
+    ss=milvus.GetAllIndexed()
+    print("asdasdasd")
+    if ss is None:
+        print("nothing found")
+    else:
+        print(ss)
+    
+    return jsonify({"message": "done"}),200
 
 def allowed_file(fileName:str):
      """Checks if the file is one of the allowed types/extensions."""
@@ -361,8 +372,6 @@ def  getAllCategories():
     list_of_ids = json.loads(list_of_ids)
     if  list_of_ids is not None:
         list_of_ids =list_of_ids.get('ids')
-        # print(type(list_of_ids))
-        # list_of_ids = list_of_ids.split(',')
     if type(list_of_ids)==list and len(list_of_ids)>0:
         categories = Category.query.filter(Category.id.in_(list_of_ids)).paginate(max_per_page=int(pageSize),page=int(pageNumber))
     else:
@@ -385,9 +394,6 @@ def GetCategoryById(id):
 
 def UpdateCategory(id):
     cat = Category.query.get(id)
-    # if  cat.parent_id != None:
-    #       return jsonify({"error": "This category has subcategories and cannot be deleted"}),404
-    # cat.setValuesFromDict(request.form)
     cat.setValuesFromJson(json.loads(request.data.decode('utf-8')))
     try:
         db.session.commit()

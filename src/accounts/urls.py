@@ -4,7 +4,7 @@ from ..app import app
 from .controllers import * #list_all_accounts_controller, create_account_controller, retrieve_account_controller, update_account_controller, delete_account_controller
 
 
-allowed_list = ['/product','/product/<product_code>','/login']
+allowed_list = ['/product','/product/<product_code>','/login','/admin/storage','/product/search/all','/product/search']
 
 @app.route("/admin/account", methods=['GET', 'POST'])
 @login_required
@@ -47,9 +47,9 @@ def currentUser():
 
 @app.before_request
 def check_Permission():
-    print('in check permission',request.url,request.method,request.cookies)
-    print(request.url_root,request.url_rule)
-    print(allowed_list,str(request.url_rule) in allowed_list)
+    # print('in check permission',request.url,request.method,request.cookies)
+    # print(request.url_root,request.url_rule)
+    # print(allowed_list,str(request.url_rule) in allowed_list)
 
     if   request.method !='OPTIONS' and str(request.url_rule) not in allowed_list:
         CheckPermissionsFunc()

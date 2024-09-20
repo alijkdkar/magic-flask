@@ -15,11 +15,7 @@ def list_productions():
 def retrieve_productions(product_code):
     if request.method == 'GET': return get_one_production_by_code_controller(product_code)
 
-@app.route("/product/search",methods=['GET', 'POST'])
-def SearchByImage():
-    print(request.method)
-    if request.method in ['GET','POST']:return search_by_file()
-    else: return 'Method is Not Allowed'
+
 
 # admin Auth API
 
@@ -61,6 +57,16 @@ def check_code_used(code):
 def UploadFile():
     if request.method in ['GET','POST']:return upload_file()
 
+
+@app.route("/product/search",methods=['GET', 'POST'])
+def SearchByImage():
+    print(request.method)
+    if request.method in ['GET','POST']:return search_by_file()
+    else: return 'Method is Not Allowed'
+
+@app.route("/product/search/all",methods=['GET'])
+def GetAllIndexApi():
+    return GetAllIndex()
 
 @app.route("/admin/category",methods=['GET','POST'])
 def list_create_category():
