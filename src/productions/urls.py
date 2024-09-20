@@ -1,22 +1,31 @@
 from flask import request
 
 from ..app import app
-from .controllers import * #create_product_controller,get_one_production_by_id_controller,list_all_production_controller,upload_file,search_by_file,update_product_controller,delete_product_controller
-from flask_login import login_required, current_user
+from .controllers import *
 
 #un auth 
 @app.route("/product", methods=['GET'])
 def list_productions():
     if request.method == 'GET': return list_all_production_controller()
-    # if request.method == 'POST': return create_product_controller()
     else: return 'Method is Not Allowed'
 
 @app.route("/product/<product_code>", methods=['GET'])
 def retrieve_productions(product_code):
     if request.method == 'GET': return get_one_production_by_code_controller(product_code)
 
+@app.route("/product/search",methods=['GET', 'POST'])
+def SearchByImage():
+    print(request.method)
+    if request.method in ['GET','POST']:return search_by_file()
+    else: return 'Method is Not Allowed'
 
-
+@app.route('/category',methods=['GET'])
+def GetCategory():
+    if request.method == 'GET':
+        return getAllCategories()
+    else:
+        return 'Method is Not Allowed'
+    
 # admin Auth API
 
 
@@ -41,7 +50,6 @@ def add_feature(product_id):
     if request.method == "POST": return AddProductFeatures(product_id)
     elif request.method == "GET": return    GetAllFeatureOfThisProduct(product_id)
     elif request.method == "PUT": return    UpdateProductFeatureById(product_id)
-    elif request.method == "Delete": return DeleteOneFeatureFromTheList(product_id)
     else: return 'Method is Not Allowed'
 
 @app.route("/admin/product/check_code/<code>", methods = ["GET"])

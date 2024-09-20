@@ -45,11 +45,12 @@ def currentUser():
     if request.method == "GET":return OnlineUser()
     else: return 'Method is Not Allowed'
 
-@app.before_request
-def check_Permission():
+# @app.before_request
+# def check_Permission():
     # print('in check permission',request.url,request.method,request.cookies)
     # print(request.url_root,request.url_rule)
     # print(allowed_list,str(request.url_rule) in allowed_list)
 
-    if   request.method !='OPTIONS' and str(request.url_rule) not in allowed_list:
-        CheckPermissionsFunc()
+    # if   request.method !='OPTIONS' and str(request.url_rule) not in allowed_list:
+    #     CheckPermissionsFunc()
+    # print("Request allowed")

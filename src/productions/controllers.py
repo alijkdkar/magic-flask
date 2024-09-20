@@ -8,7 +8,8 @@ from ..utils.milvus import MyMilvuesClient
 from ..utils.milvus import MyMilvuesClient
 
 from .models import Production,ProductionImage,Category,Tag,ProductionFeatures
-from sqlalchemy import inspect
+from sqlalchemy.sql import text
+
 
 
 allowed_extention = ['jpg','jpeg','png',]
@@ -19,20 +20,38 @@ milvus=MyMilvuesClient().connect()
 def list_all_production_controller():
         pageSize = request.args.get('pageSize')
         pageNumber = request.args.get('pageNumber')
+        categoriesFilter = request.args.get('categories')
         if pageSize is None:
             pageSize=10
         
         if pageNumber is None:
             pageNumber = 1
+        sort=''
+        if 'sort' in request.args:
+            sor =  request.args.get("sort")
+            sor = json.loads(str(sor))
+            sort = '"production"."'+sor[0]+'"'+" "+sor[1]
+        
+        if categoriesFilter is not None and categoriesFilter.strip() != '':
+            categoriesFilter = categoriesFilter.split(',')
+            allProduction =  (Production.query
+                                            .join(Production.categories)
+                                            .filter(Production.categories.any(Category.id.in_(categoriesFilter)))
+                                            .order_by(text(sort)).paginate(max_per_page=int(pageSize),page=int(pageNumber)))
 
-        allProduction =  Production.query.paginate(max_per_page=int(pageSize),page=int(pageNumber))
+        else:
+            allProduction =  Production.query.order_by(text(sort)).paginate(max_per_page=int(pageSize),page=int(pageNumber))
+        
+        
+        
         response = []
         for pro in allProduction:
                 data =pro.toDict()
-                data["image"]=minio.GetFileUrl(pro.image)
+                if pro.image is not None:    
+                    data["image"]=minio.GetFileUrl(pro.image)
 
                 categoris=[]
-                for cat in pro.categorys:
+                for cat in pro.categories:
                     categoris.append(cat.toDict())
                 data['categories'] = categoris
                 data['features']=pro.getFeaturesWithTotoalPrice()
@@ -44,19 +63,14 @@ def get_one_production_by_code_controller(product_code):
         product = Production.query.filter_by(code=product_code).first()
         imagesUrl =[]
         
-        for idx,x in enumerate(product.images):
-            # print(idx,minio.GetFileUrl(x.file_id))
-            j = ({"file_id":x.file_id,"url": minio.GetFileUrl(x.file_id)})
-            print("ccccc",j,"ccccc")
-            imagesUrl.append(j)
+        for _,img in enumerate(product.images):
+            imagesUrl.append(minio.GetFileUrl(img.file_id))
 
-        print("xxxxxx",imagesUrl)
         data=product.toDict()
-        # data["imagesUrls"]=product.imagesUrl
         data["images"]=imagesUrl
-        data['image']=({"file_id":product.image,"url": minio.GetFileUrl(product.image)}) #minio.GetFileUrl(product.image)
+        data['image']= minio.GetFileUrl(product.image)
         categoris=[]
-        for cat in product.categorys:
+        for cat in product.categories:
             categoris.append(cat.toDict())
         data['categories'] = categoris
         data['features']=product.getFeaturesWithTotoalPrice()
@@ -66,34 +80,29 @@ def get_one_production_by_code_controller(product_code):
 def get_one_production_by_id_controller(prodId):
         product = Production.query.get(prodId)
         imagesUrl =[]
-        
-        for idx,x in enumerate(product.images):
-            # print(idx,minio.GetFileUrl(x.file_id))
-            j = ({"file_id":x.file_id,"url": minio.GetFileUrl(x.file_id)})
-            print("ccccc",j,"ccccc")
-            imagesUrl.append(j)
+        if product.images is not None:
+            for idx,x in enumerate(product.images):
+                j = ({"file_id":x.file_id,"url": minio.GetFileUrl(x.file_id)})
+                imagesUrl.append(j)
 
-        print("xxxxxx",imagesUrl)
         data=product.toDict()
-        # data["imagesUrls"]=product.imagesUrl
         data["images"]=imagesUrl
-        data['image']=({"file_id":product.image,"url": minio.GetFileUrl(product.image)}) #minio.GetFileUrl(product.image)
+        if product.image is not None:    
+            data['image']=({"file_id":product.image,"url": minio.GetFileUrl(product.image)})
         categoris=[]
-        for cat in product.categorys:
-            categoris.append(cat.toDict())
+        for cat in product.categories:
+            categoris.append(cat.id)
         data['categories'] = categoris
         data['features']=product.getFeaturesWithTotoalPrice()
 
         return jsonify(data)
 
 def create_product_controller():
-    # request_form = request.form.to_dict()
     request_form1 = request.data.decode('utf-8')
     id = str(uuid.uuid4())
-    print(id)
+    
     json_data = json.loads(request_form1)
-
-    if json_data.get('code') is not None and CheckCodeUsed(json_data['code']):
+    if json_data.get('code') is not None and CheckCodeUsed(json_data.get('code'))==True:
         return  jsonify({"status":"bad request","msg":"duplicat code"}),400
 
 
@@ -104,23 +113,26 @@ def create_product_controller():
                           image = json_data.get('image'),
                           price = json_data.get('price'),
                           unit = json_data.get('unit'),
-                          material = json_data.get('materil'),
+                          material = json_data.get('material'),
                           code = json_data.get('code'),
                           color = json_data.get('color'),
                           stock  = json_data.get('stock'),
+                          enable = json_data.get('enable'),
+                          viewOnly = json_data.get('viewOnly'),
                           )
     imagesId = json_data.get('images')
     print("images :",imagesId,new_production.id)
-    for x in imagesId:
-        newImageId = str(uuid.uuid4())
-        newProductImage= ProductionImage(
+    if imagesId is not None:
+        for x in imagesId:
+            newImageId = str(uuid.uuid4())
+            newProductImage= ProductionImage(
               id = newImageId,
               file_id = x,
               product_id=new_production.id,
               image_path= '',
               type = 'Image'
-        )
-        db.session.add(newProductImage)
+            )
+            db.session.add(newProductImage)
     
     AddProductFeatures(id)
 
@@ -131,7 +143,7 @@ def create_product_controller():
     print(categorisIds)
     for catId in categorisIds:
         cat =Category.query.get(catId)
-        new_production.categorys.append(cat)
+        new_production.categories.append(cat)
     db.session.commit()
 
 
@@ -140,9 +152,31 @@ def create_product_controller():
 
 def update_product_controller(product_id):
     productDb = Production.query.get(product_id)
-    vv= json.loads(request.data.decode("utf-8"))
-    # productDb.setValuesFromDict(request.form)
-    productDb.setValuesFromJson(vv)
+    requestPayload= json.loads(request.data.decode("utf-8"))
+    productDb.setValuesFromJson(requestPayload)
+
+   
+    features = ProductionFeatures.query.filter_by(product_id=str(product_id)).all()
+    for x in features:
+        db.session.delete(x)
+
+    AddProductFeatures(product_id)
+
+    for img in productDb.images:
+        db.session.delete(img)
+    imagesId = requestPayload.get('images')
+    if imagesId is not None:
+        for x in imagesId:
+            newImageId = str(uuid.uuid4())
+            newProductImage= ProductionImage(
+              id = newImageId,
+              file_id = x,
+              product_id=productDb.id,
+              image_path= '',
+              type = 'Image'
+            )
+            db.session.add(newProductImage)
+    
     db.session.commit()
     return jsonify({"Message":"Success"}),201
 
@@ -153,8 +187,6 @@ def delete_product_controller(product_id):
     
     print(product.images)
     for img in product.images:
-        # imgId = uuid.UUID(img.id)
-        # pimage =ProductionImage.query.filter_by(id=imgId).first()
         db.session.delete(img)
     
     db.session.delete(product)
@@ -166,38 +198,37 @@ def AddProductFeatures(product_id):
     # product = Production.query.get(product_id)
     # if product is None:
     #     abort(404)
+
     try:
-        print(request_form)
         json_data = json.loads(request_form)
-        print("after")
         # Access the 'Features' array
-        features = json_data.get('Features')
+        features = json_data.get('features')
         print("its feature:",features)
         # Process each feature
-        for feature in features:
-            feature_name = feature.get('name')
-            feature_description = feature.get('description')
-            feature_type = feature.get('feature_type')
-            feature_value = feature.get('value')
-            is_price_effect = feature.get('is_price_effect')
-            price_effect_value = feature.get('price_effect_value')
-            enable = feature.get('enable')
-            new_feature=ProductionFeatures(id=str(uuid.uuid4()),
-                           product_id = product_id,
-                           name = feature_name,
-                           description = feature_description,
-                           feature_type = str(feature_type), #ProductFeatureType(feature_type),
-                           value = feature_value,
-                           is_price_effect = bool(is_price_effect),
-                           enable = bool(enable),
-                           price_effect_value = price_effect_value
-                           )
-            db.session.add(new_feature)
-        # db.session.commit()
+        if features is not None:
+        
+            for feature in features:
+                feature_name = feature.get('title')
+                feature_description = feature.get('description')
+                feature_type = feature.get('featureType')
+                feature_value = feature.get('value')
+                is_price_effect = bool(feature.get('isEffectPrice'))
+                price_effect_value = feature.get('priceEffectValue')
+                enable = feature.get('active')
+                new_feature=ProductionFeatures(id=str(uuid.uuid4()),
+                            product_id = product_id,
+                            name = feature_name,
+                            description = feature_description,
+                            feature_type = str(feature_type), #ProductFeatureType(feature_type),
+                            value = feature_value or 'someValue',
+                            is_price_effect = bool(is_price_effect),
+                            enable = bool(enable),
+                            price_effect_value = price_effect_value
+                            )
+                db.session.add(new_feature)
 
                 
     except json.JSONDecodeError as ex :
-    # except Exception as  ex :
         print("Data is not in JSON format",ex.msg)
         abort(500)
     return jsonify("Feature added successfully"),201
@@ -210,7 +241,7 @@ def GetAllFeatureOfThisProduct(product_id):
     response = []
     for x in features:
         response.append(x.toDict())
-    return jsonify({"count":len(response),"list":response})
+    return features
 
 def UpdateProductFeatureById(product_id):
     product =Production.query.get(product_id)
@@ -221,18 +252,18 @@ def UpdateProductFeatureById(product_id):
         print(request_form)
         json_data = json.loads(request_form)
         # Access the 'Features' array
-        features = json_data.get('Features')
+        features = json_data.get('features')
 
         # Process each feature
         for feature in features:
             feature_id = feature.get('id')
-            feature_name = feature.get('name')
+            feature_name = feature.get('title')
             feature_description = feature.get('description')
-            feature_type = feature.get('feature_type')
+            feature_type = feature.get('featureType')
             feature_value = feature.get('value')
-            is_price_effect = bool(feature.get('is_price_effect'))
-            price_effect_value = feature.get('price_effect_value')
-            enable = bool(feature.get('enable'))
+            is_price_effect = bool(feature.get('isEffectPrice'))
+            price_effect_value = feature.get('priceEffectValue')
+            enable = bool(feature.get('active'))
             featureDb =ProductionFeatures.query.get(feature_id)
             if featureDb is not None:
                 featureDb.setValues(name=feature_name,description=feature_description,type=feature_type,value=feature_value,is_price_effect=is_price_effect,price_effect_value=price_effect_value,enable=enable)
@@ -243,7 +274,6 @@ def UpdateProductFeatureById(product_id):
 
                 
     except json.JSONDecodeError as ex :
-    # except Exception as  ex :
         print("Data is not in JSON format",ex.msg)
         abort(500)
     return jsonify("Feature updated successfully"),200
@@ -251,7 +281,9 @@ def UpdateProductFeatureById(product_id):
 def DeleteOneFeatureFromTheList(product_id,feature_id):
     pass
 
-###### production-END ######
+
+
+###### production ######
 
 
 def upload_file():
@@ -275,7 +307,6 @@ def upload_file():
             file.filename=str(uuid.uuid4())+extention
             minio.Upload_File(file=file)
             feature = CoreImageAnalyzer().FeattureExtraction(file=file)
-            print('feature:>>>>>',feature)
             ids = milvus.insert_vectors(file.filename,feature)
             print('milvus:',ids)
             fileUrl = minio.GetFileUrl(fileName=file.filename)
@@ -338,9 +369,7 @@ def allowed_file(fileName:str):
      return False
 
 def CheckCodeUsed(code):
-        print(code)
         p=Production.query.filter_by(code=code).first()
-        print("pppp",p is None)
         return jsonify( p is not None)
 
 
@@ -351,18 +380,19 @@ def create_category():
     # print(json_data.get('parentId'))
     
     if  json_data.get('parentId') is not None:
-        cat = Category(title=json_data.get('title'),description=json_data.get('description'),parent_id=json_data.get('parentId'))
+        cat = Category(title=json_data.get('title'),description=json_data.get('description'),parent_id=json_data.get('parentId'),enName=json_data.get('enName'))
     else:
-        cat = Category(title=json_data.get('title'),description=json_data.get('description'))
+        cat = Category(title=json_data.get('title'),description=json_data.get('description'),enName=json_data.get('enName'))
     db.session.add(cat)
     db.session.commit()
     return jsonify(cat.toDict())
+
+
 
 def  getAllCategories():
     list_of_ids = request.args.get('filter')
     pageSize = request.args.get('pageSize')
     pageNumber = request.args.get('pageNumber')
-    print(list_of_ids)
 
     if pageSize is None:
         pageSize=10
@@ -392,8 +422,12 @@ def GetCategoryById(id):
 
 
 
+
 def UpdateCategory(id):
     cat = Category.query.get(id)
+    # if  cat.parent_id != None:
+    #       return jsonify({"error": "This category has subcategories and cannot be deleted"}),404
+    # cat.setValuesFromDict(request.form)
     cat.setValuesFromJson(json.loads(request.data.decode('utf-8')))
     try:
         db.session.commit()
@@ -412,7 +446,6 @@ def DeleteCategory(id):
           db.session.commit()
           return  jsonify("Category Deleted")
 
+
 #Todo Crud
 ######### end Category #########
-
-##{"ids":[[{"description":"Root desc","id":7,"parent_id":null,"title":"Root"},{"description":"child desc 1","id":8,"parent_id":7,"title":"child 1"}]]}
