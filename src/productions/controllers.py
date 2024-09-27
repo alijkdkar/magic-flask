@@ -61,10 +61,15 @@ def list_all_production_controller():
 
 def get_one_production_by_code_controller(product_code):
         product = Production.query.filter_by(code=product_code).first()
+
+        if product is None:
+            return jsonify("{'message':'product not found'}"),404
+
         imagesUrl =[]
         
-        for _,img in enumerate(product.images):
-            imagesUrl.append(minio.GetFileUrl(img.file_id))
+        if product is not None and product.images is not None:
+            for _,img in enumerate(product.images):
+                imagesUrl.append(minio.GetFileUrl(img.file_id))
 
         data=product.toDict()
         data["images"]=imagesUrl
@@ -338,9 +343,10 @@ def search_by_file():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             feature = CoreImageAnalyzer().FeattureExtraction(file=file)
-            milvus.search_similar_vectors(feature)
+            res = milvus.search_similar_vectors(feature)
             # upload to minio and return id 
-            return list_all_production_controller()
+            # return list_all_production_controller()
+            return jsonify(res)
             
     return '''
     <!doctype html>

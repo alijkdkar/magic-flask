@@ -2,6 +2,7 @@ from pymilvus import connections, db
 from pymilvus import connections, FieldSchema, CollectionSchema, DataType,utility,Collection
 from pymilvus import MilvusClient
 import pandas as pa
+import uuid
 
 import numpy as np
 # import cv2
@@ -58,31 +59,34 @@ class MyMilvuesClient():
 
 
         def connect(self) -> 'MyMilvuesClient':
-                print('in connect :',os.getenv('milvusHost'))
-                # connections.connect(alias="default",uri=os.getenv('milvusHost'),token="root:Milvus",)
-                # connections.connect(alias="default",uri='localhost',token="root:Milvus",)
-                connections.connect(uri='tcp://127.0.0.1:19530')
+                print('in connect milvusHost:',os.getenv('milvusHost'))   
+                print('in connect milvusConnection:',os.getenv('milvusConnection'))   
+                connectionString = os.getenv('milvusConnection')
+
+                connections.connect(uri=connectionString)
                 print('in connect affer:',os.getenv('milvusHost'))
                 self.milvus_connection = connections
                 self.create_collection_if_not_exists(os.getenv('milvusBucketName'))
 
                 # self.GetAllIndexed()
-                self.MilvusClient = MilvusClient(uri="http://localhost:19530") ##host=os.getenv('milvusHost'), port=os.getenv('milvusHostPort'))
+                self.MilvusClient = MilvusClient(uri=connectionString)
+                # self.MilvusClient = MilvusClient(uri="http://localhost:19530")
                 
                 return self
         
-        # Define a function to insert vectors into Milvus
-        def insert_vectors(self,imgId,vectors):
+        
+        
+        def insert_vectors(self,imgId,vectors,productId,productUrl=None):
                
                 collection = Collection(os.getenv('milvusBucketName'))
 
                 print('feature size :',vectors.shape)
                 data = [{
-                "vectorId": imgId,
-                "productId": '0',
+                "vectorId": str(uuid.uuid4()),
+                "productId": productId,
                 "imageId": imgId,
                 "vector":vectors[:128], #todo : must to make 128 dim for feature in feature extraction 
-                "productUrl" : "http://google.com"
+                "productUrl" : productUrl
                 }]
                 print(data)
                 #load data into a DataFrame object:
@@ -99,12 +103,7 @@ class MyMilvuesClient():
 
         # Define a function to perform similarity search
         def search_similar_vectors(self, query_vector, top_k=5):
-                # status, results = self.MilvusClient.search(collection_name=os.getenv('milvusBucketName'), data=[query_vector], top_k=top_k,search_params={"params":{}})
-                # if status.OK():
-                #         print("Similar vectors found:", results)
-                # else:
-                #         print("Failed to search similar vectors:", status)
-                # search_params = {"metric_type": "L2", "params": {"nprobe": 10}}
+                
                 try:
                         results = self.MilvusClient.search(
                         collection_name=os.getenv('milvusBucketName'),
@@ -112,12 +111,13 @@ class MyMilvuesClient():
                         # anns_field='vector',  # Replace with the name of your vector field
                         # filter=None,
                         # param=search_params,
-                        limit=top_k
-                        ,output_fields=["vectorId","vector"]
-                        )
+                        limit=top_k,
+                        output_fields=["vectorId","productUrl"])
                         print("Similar vectors found:", results)
+                        return results
                 except Exception as e:
                         print("Failed to search similar vectors:", e)
+                        return None
 
 
 
@@ -153,24 +153,9 @@ class MyMilvuesClient():
 
                 # result = self.milvus_client.get(collection_name=collection_name,expr=expr, output_fields=["vectorId", "productId", "imageId", "vector"])
                 result= self.MilvusClient.get(collection_name=collection_name,ids=['73bcc25b-021f-4be8-a8ac-41faa12097a6.jpeg'])
-                print("Ssss")
-                print(result)
-                print("zzzzz")
                 if result is not None:
                         print(f"Retrieved {len(result)} records from the collection.")
                         return result
                 else:
                         print(f"No records found in collection '{collection_name}'.")
                         return None
-
-# Example usage:
-# Inserting vectors
-# image_paths = ['image1.jpg', 'image2.jpg', 'image3.jpg']
-# collection_name = 'image_collection'
-# vectors = [extract_features(image_path) for image_path in image_paths]
-# ids = insert_vectors(collection_name, vectors)
-
-# # Perform similarity search
-# query_image_path = 'query_image.jpg'
-# query_vector = extract_features(query_image_path)
-# search_similar_vectors(collection_name, [query_vector])

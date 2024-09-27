@@ -24,8 +24,9 @@ class CoreImageAnalyzer:
                 if file is None or "":
                         return None
                 
-           
-
+                if not file or (type(file)=='str' and not os.path.exists(file)):
+                        raise ValueError("Invalid file path or file does not exist.")
+                
                 # Load two example images
                 image1 = color.rgb2gray(io.imread(file))
                 # image2 = color.rgb2gray(io.imread("image2.jpg"))

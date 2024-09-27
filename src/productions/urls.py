@@ -13,11 +13,11 @@ def list_productions():
 def retrieve_productions(product_code):
     if request.method == 'GET': return get_one_production_by_code_controller(product_code)
 
-@app.route("/product/search",methods=['GET', 'POST'])
-def SearchByImage():
-    print(request.method)
-    if request.method in ['GET','POST']:return search_by_file()
-    else: return 'Method is Not Allowed'
+# @app.route("/product/search",methods=['GET', 'POST'])
+# def SearchByImage():
+#     print(request.method)
+#     if request.method in ['GET','POST']:return search_by_file()
+#     else: return 'Method is Not Allowed'
 
 @app.route('/category',methods=['GET'])
 def GetCategory():

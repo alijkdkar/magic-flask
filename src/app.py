@@ -10,6 +10,7 @@ app = create_app(os.getenv("CONFIG_MODE"))
 # Applications Routes
 from .accounts import urls
 from .productions import urls
+from .scraps import urls
 
 
 # Hello World!
